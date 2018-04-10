@@ -3,6 +3,7 @@ classdef Displacement
     %   Detailed explanation goes here
     
     properties
+        type
         strength
         scale
     end
