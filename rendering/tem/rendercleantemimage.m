@@ -215,5 +215,8 @@ transmissionDistanceMap = vertcat(transmissionDistanceMapSlices{:});
 % Calculate the relative transmission intensity.
 % Source: Hornbogen, Skrotzki: Mikro- und Nanoskopie der Werkstoffe
 cleanTemImage = exp(-transmissionCoefficient*transmissionDistanceMap);
+
+% Resize image, in case that relativeResolution<1.
+cleanTemImage = imresize(cleanTemImage,[height width]);
 end
 
