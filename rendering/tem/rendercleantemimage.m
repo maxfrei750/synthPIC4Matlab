@@ -17,7 +17,7 @@ function cleanTemImage = rendercleantemimage(mesh,width,height,varargin)
 %
 %   'tileSize' - Sidelength of the square tiles, which are rendered.
 %                Affects the memory consumption and the render speed.
-%                Default: 100
+%                Default: 500
 %
 %   'relativeResolution' - Sets the rendering resolution.
 %                          Example: for 'relativeResolution', 0.5 only
@@ -55,7 +55,7 @@ isValidRelativeResolution = @(x) validateattributes( ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar','>=',0,'<=',1});
 
 % Default values
-defaultTileSize = 100;
+defaultTileSize = 500;
 defaultTransmissionCoefficient = 0.005;
 defaultRelativeResolution = 1;
 
