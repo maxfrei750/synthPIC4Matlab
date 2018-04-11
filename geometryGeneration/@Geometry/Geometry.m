@@ -18,7 +18,7 @@ classdef Geometry
     end
     
     properties(Access = private)
-        primitiveMesh = Mesh;
+        primitiveMesh
     end
     
     properties(SetAccess = private)
@@ -38,8 +38,7 @@ classdef Geometry
             primitive = createPrimitive(type,lengthArray,varargin{:});
             
             % Backup the mesh of the primitive.
-            obj.primitiveMesh.vertices = primitive.vertices;
-            obj.primitiveMesh.faces = primitive.faces;
+            obj.primitiveMesh = Mesh(primitive.vertices,primitive.faces);
         end
         
         %% Getter methods
@@ -77,7 +76,7 @@ classdef Geometry
                 % ...
             end
             
-            % Set tecture of the meshObject.
+            % Set texture of the meshObject.
             meshObject.texture = ones(meshObject.nVertices,3)*obj.color;
         end
         
