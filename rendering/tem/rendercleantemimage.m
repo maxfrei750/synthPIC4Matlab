@@ -77,7 +77,7 @@ transmissionCoefficient = p.Results.transmissionCoefficient;
 relativeResolution = p.Results.relativeResolution;
 
 %% Rendering
-% Extract vertices and faces from mesh.
+% Extract vertices, faces from mesh.
 vertices = mesh.vertices;
 faces = mesh.faces;
 
@@ -107,7 +107,7 @@ while doRetry
         transmissionDistanceMapTiles = cell(nTiles_x,nTiles_y);
         
         % Render on multiple GPUs if available.
-        parfor iTile = 1:nTiles
+        for iTile = 1:nTiles
             
             % Calculate current tile indices in x- andy y- direction.
             iTile_x = mod(iTile-1,nTiles_x)+1;
@@ -156,7 +156,7 @@ while doRetry
             rayDirections_in = gpuArray(rayDirections_in);
             
             % Calculate the intersection distances of each incident ray.
-            [intersectionDistances, ~] = arrayfun(...
+            [intersectionDistancesArray, intersectionFlagsArray] = arrayfun(...
                 @rayTriGPU, ...
                 P0(:,1)', P0(:,2)', P0(:,3)', ...
                 P1(:,1)', P1(:,2)', P1(:,3)', ...
@@ -164,19 +164,92 @@ while doRetry
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
                 rayDirections_in(:,1),rayDirections_in(:,2),rayDirections_in(:,3)); %#ok<*PFBNS>
             
+            %             % Restructure intersectionDistances and intersectionFlags into cell arrays.
+            %             intersectionDistances = mat2cell(intersectionDistances,ones(nPixels,1));
+            %             intersectionFlags = mat2cell(intersectionFlags,ones(nPixels,1));
             
-            % Calculate the transmission length for each ray by computing the
-            % difference of the intersection distances.
-            transmissionDistances = max(intersectionDistances,[],2)-min(intersectionDistances,[],2);
+            totalTransmissionDistances = zeros(nPixels,1,'gpuArray');
+            
+            for iRay = 1:nPixels
+                % Select intersectionFlags of current ray.
+                intersectionFlags = intersectionFlagsArray(iRay,:);
+                
+                % If no intersections occured, then continue.
+                if ~any(intersectionFlags)
+                    continue
+                end
+                
+                % Select intersectionDistances of current ray.
+                intersectionDistances = intersectionDistancesArray(iRay,:);
+                
+                % Keep only relevant distances.
+                intersectionDistances = intersectionDistances(intersectionFlags);
+                
+                % Get relevant facesObjectIDs.
+                facesObjectIDs = mesh.facesObjectIDs(intersectionFlags);
+                
+                % Order distances and facesObjectIDs according to distances.
+                [intersectionDistances,orderIndices] = sort(intersectionDistances);
+                facesObjectIDs = facesObjectIDs(orderIndices);
+                
+                nRelevantFaceObjectIDs = size(facesObjectIDs,1);
+                
+                index = (1:nRelevantFaceObjectIDs)';
+                isEven = @(x) ~mod(x,2);
+                
+                doKeep = ...
+                    index == 1 | ...    % first element
+                    index == nRelevantFaceObjectIDs & isEven(index) | ...  % last element, if its index is even
+                    index == nRelevantFaceObjectIDs-1 & isEven(index) | ...  % last but one element, if its index is even
+                    facesObjectIDs(index) == [facesObjectIDs(index(1:end-1)+1);NaN] & ~isEven(index) | ...
+                    facesObjectIDs(index) == [NaN;facesObjectIDs(index(2:end)-1)] & isEven(index);
+                
+                intersectionDistances = intersectionDistances(doKeep);
+                
+                transmissionDistances = intersectionDistances-[0 intersectionDistances(1:end-1)];
+                transmissionDistances = transmissionDistances(2:2:end);
+                
+                totalTransmissionDistances(iRay) = sum(transmissionDistances);
+            end
+            %             %% for testing -------------------------------------
+            %             linearIdx = 80*nPixels_y+45;
+            %             testFlags = gather(intersectionFlags(linearIdx,:));
+            %             testDistances = gather(intersectionDistances(linearIdx,:));
+            %
+            %             % Keep only relevant distances.
+            %             testDistances = testDistances(testFlags);
+            %
+            %             % Keep only relevant facesObjectIDs.
+            %             facesObjectIDs = facesObjectIDs(testFlags);
+            %
+            %             % Order distances and objectIDs according to distances.
+            %             [testDistances,orderIdx] = sort(testDistances);
+            %             facesObjectIDs = facesObjectIDs(orderIdx);
+            %
+            %             nRelevantFaceObjectIDs = size(facesObjectIDs,1);
+            %
+            %             index = (1:nRelevantFaceObjectIDs)';
+            %             isEven = @(x) ~mod(x,2);
+            %
+            %
+            %             doKeep = ...
+            %                 index == 1 | ...    % first element
+            %                 index == nRelevantFaceObjectIDs & isEven(index) | ...  % last element, if its index is even
+            %                 index == nRelevantFaceObjectIDs-1 & isEven(index) | ...  % last but one element, if its index is even
+            %                 facesObjectIDs(index) == [facesObjectIDs(index(1:end-1)+1);NaN] & ~isEven(index) | ...
+            %                 facesObjectIDs(index) == [NaN;facesObjectIDs(index(2:end)-1)] & isEven(index);
+            %
+            %             testDistances = testDistances(doKeep);
+            %
+            %             transmissionDistances = testDistances-[0 testDistances(1:end-1)];
+            %             transmissionDistances = transmissionDistances(2:2:end);
+            %             %% -------------------------------------------------
             
             % Free memory on GPU.
             [~] = gather(intersectionDistances);
             
-            % NaNs represent no intersections, so set the thickness to 0.
-            transmissionDistances(isnan(transmissionDistances)) = 0;
-            
             % Reshape the data to get a thickness map.
-            transmissionDistanceMapTile = reshape(transmissionDistances,nPixels_y,nPixels_x);
+            transmissionDistanceMapTile = reshape(totalTransmissionDistances,nPixels_y,nPixels_x);
             
             % Save tile.
             transmissionDistanceMapTiles{iTile} = ...
@@ -197,7 +270,7 @@ while doRetry
                 rethrow(matlabError)
         end
         
-    end    
+    end
 end
 
 %% Stitch tiles together.
