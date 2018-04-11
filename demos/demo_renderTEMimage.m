@@ -6,10 +6,10 @@ rng(7);
 
 %% Parameters
 tic;
-imageWidth = 1280;
-imageHeight = 960;
+imageWidth = 100;
+imageHeight = 100;
 
-nObjects = 10;
+nObjects = 2;
 minMaxDiameter = [50 100];
 
 
@@ -27,7 +27,7 @@ for iObject = 1:nObjects
 %     object.rotationAxisDirection = rand(1,3);
 %     object.rotationAngleDegree = rand*360;
 
-    object.position = [randd([0 imageWidth]) randd([0 imageHeight]) randd([0 100])];
+    object.position = [randd([0 imageWidth]) randd([0 imageHeight]) randd([0 200])];
     
     objectMesh = objectMesh+object.mesh;
 end
