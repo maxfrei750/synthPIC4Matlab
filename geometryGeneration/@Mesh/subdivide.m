@@ -8,5 +8,9 @@ validateattributes( ...
 if subdivisionLevel > 1
     [obj.vertices,obj.faces] = ...
         subdivideMesh(obj.vertices,obj.faces,subdivisionLevel);
+    
+    % Update facesObjectIDs
+    facesObjectIDs_temp = repmat(obj.facesObjectIDs',subdivisionLevel^2,1);
+    obj.facesObjectIDs = facesObjectIDs_temp(:);
 end
 end

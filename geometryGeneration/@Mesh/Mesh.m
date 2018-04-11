@@ -3,9 +3,14 @@ classdef Mesh
     %   Faces are automatically triangulated.
     
     properties
+        texture
+    end
+    
+    properties(SetAccess=private)
         vertices
         faces
-        texture
+        nObjects = 0
+        facesObjectIDs
     end
     
     properties(Dependent = true)
@@ -17,19 +22,42 @@ classdef Mesh
     end
     
     methods
-        
-        %% Setter-Methods
-        function obj = set.vertices(obj,value)
-            % Validate the input.
+        %% Constructor
+        function obj = Mesh(vertices,faces)
+            %% Process vertices.
+            % Validate vertices.
             validateattributes( ...
-                value, ...
+                vertices, ...
                 {'numeric'}, ...
                 {'real','finite','nonnan','nonsparse','nonempty','ncols',3});
             
-            % Assign property.
-            obj.vertices = value;
+            obj.vertices = vertices;
+            
+            %% Process faces.
+            % Triangulate faces if necessary.
+            if size(faces,2) ~= 3
+                faces = triangulateFaces(faces);
+            end
+            
+            % Validate faces.
+            validateattributes( ...
+                faces, ...
+                {'numeric'}, ...
+                {'real','finite','nonnan','nonsparse','nonempty','positive','2d','ncols',3});
+            
+            % Check if faces and vertices are compatible.
+            assert( ...
+                isequal(unique(faces(:))',1:obj.nVertices), ...
+                'Values in faces must lie within the range, 1 and number of vertices.');
+            
+            obj.faces = faces;
+            
+            %% Set facesObjectIds
+            obj.facesObjectIDs = ones(obj.nFaces,1);
+            
         end
         
+        %% Setter-methods
         function obj = set.texture(obj,value)
             % Validate the input.
             validateattributes( ...
@@ -41,36 +69,9 @@ classdef Mesh
             obj.texture = value;
         end
         
-        function obj = set.faces(obj,value)
-            % Triangulate the faces if necessary.
-            if size(value,2) ~= 3
-                value = triangulateFaces(value);
-            end
-            
-            % Validate the input.
-            validateattributes( ...
-                value, ...
-                {'numeric'}, ...
-                {'real','finite','nonnan','nonsparse','nonempty','positive','2d','ncols',3});
-            
-            % Assign property.
-            obj.faces = value;
-            
-        end
-        
         %% Getter-methods
         function edges = get.edges(obj)
             edges = meshEdges(obj.faces);
-        end
-        
-        function texture = get.texture(obj)
-            % If the mesh has no texture, then return a completely white
-            % texture.
-            if isempty(obj.texture)
-                texture = ones(obj.nVertices,3);
-            else
-                texture = obj.texture;
-            end
         end
         
         function nVertices = get.nVertices(obj)
@@ -92,7 +93,7 @@ classdef Mesh
                 getrandompointsinmesh(obj,nRandomPointsInVolume);
             
             centerOfMass = mean(randomPointsInVolume);
-        end   
+        end
     end
 end
 
