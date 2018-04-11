@@ -23,7 +23,7 @@ particleColor = 0.9;
 
 %% Create geometry list.
 
-objectMesh = Mesh;
+objectMesh = Mesh.empty;
 
 for iObject = 1:nObjects
     diameter = randd(minMaxDiameter);
