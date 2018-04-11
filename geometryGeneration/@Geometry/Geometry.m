@@ -18,8 +18,6 @@ classdef Geometry
     end
     
     properties(Access = private)
-        vertices = []
-        faces = []
         primitiveMesh = Mesh;
     end
     
@@ -42,10 +40,6 @@ classdef Geometry
             % Backup the mesh of the primitive.
             obj.primitiveMesh.vertices = primitive.vertices;
             obj.primitiveMesh.faces = primitive.faces;
-            
-            % Set the current vertices and faces.
-            obj.vertices = obj.primitiveMesh.vertices;
-            obj.faces = obj.primitiveMesh.faces;
         end
         
         %% Getter methods
@@ -53,11 +47,7 @@ classdef Geometry
             
             % Start with the mesh of the primitive.
             meshObject = obj.primitiveMesh;
-            
-            % (Re)set vertices and faces.
-            obj.vertices = obj.primitiveMesh.vertices;
-            obj.faces = obj.primitiveMesh.faces;
-            
+                        
             % Apply rotation.
             % Disable rotation for spheres.
             if strcmp(obj.type,'sphere')
