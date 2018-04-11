@@ -1,9 +1,7 @@
 function varargout = parseoutputs(vertices,faces,edges)
 switch nargout
     case {0, 1}
-        mesh = Mesh;
-        mesh.faces = faces;
-        mesh.vertices = vertices;
+        mesh = struct('vertices',vertices,'faces',faces);
         varargout{1} = mesh;
     case 2
         varargout{1} = vertices;
