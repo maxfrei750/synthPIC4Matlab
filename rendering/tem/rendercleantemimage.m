@@ -141,6 +141,9 @@ while doRetry
             
             nPixels = nPixels_x*nPixels_y;
             
+            % Generate one ray for each pixel.
+            nRays = nPixels;
+            
             % Make a list of all the pixel coordinates.
             [pixelCentroids_x,pixelCentroids_y]  = meshgrid(x_steps,y_steps);
             
@@ -164,11 +167,55 @@ while doRetry
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
                 rayDirections_in(:,1),rayDirections_in(:,2),rayDirections_in(:,3)); %#ok<*PFBNS>
             
-            %             % Restructure intersectionDistances and intersectionFlags into cell arrays.
-            %             intersectionDistances = mat2cell(intersectionDistances,ones(nPixels,1));
-            %             intersectionFlags = mat2cell(intersectionFlags,ones(nPixels,1));
+            % make the huge numbers readable for humans. can be removed
+            % later
+            intersectionDistancesArray = intersectionDistancesArray-min(intersectionDistancesArray);
+              
+            % Transpose ray tracing output.
+            intersectionDistancesArray = intersectionDistancesArray';
+            intersectionFlagsArray  = intersectionFlagsArray';
             
-            totalTransmissionDistances = zeros(nPixels,1,'gpuArray');
+            % Sort the intersectionDistancesArray and save the orderIndices
+             [intersectionDistancesArray,orderIndices] = sort(intersectionDistancesArray,1);    
+             orderIndices = matrixorder2linearorder(orderIndices,1);
+            
+             intersectionFlagsArray = intersectionFlagsArray(orderIndices);
+            
+            % Initialize array for totalTransmissionDistances.
+            totalTransmissionDistances = zeros(1,nPixels,'gpuArray');
+            
+            % Determine relevant rays, i.e. they hit the geometry.
+            isRelevantRay = any(intersectionFlagsArray,1);
+            
+            relevantRayIndices = 1:nRays;
+            relevantRayIndices = relevantRayIndices(isRelevantRay)';
+            nRelevantRays = sum(isRelevantRay);
+            
+            % Remove NaNs from intersectionDistancesArray.
+            intersectionDistancesArray(~intersectionFlagsArray) = [];
+            intersectionDistancesArray = intersectionDistancesArray';
+            
+            % Group elements of intersectionDistancesArray by relevant rays.
+            portions = sum(intersectionFlagsArray,1);
+            portions = portions(portions~=0);
+            portions = gather(portions);
+            
+            intersectionDistancesArray = mat2cell(intersectionDistancesArray,portions',1);
+            
+            % Duplicate facesObjectIDs for every ray.
+            facesObjectIDArray = repmat(gpuArray(mesh.facesObjectIDs'),1,nRays);
+            % Sort facesObjectIDs according to the interSectionsDistances
+            % of the faces.
+            facesObjectIDArray = facesObjectIDArray(orderIndices);
+            
+            % Remove faceObjectIDs, which are not associated with
+            % intersected faces.
+            %facesObjectIDArray = facesObjectIDArray(relevantRayIndices,:);
+            facesObjectIDArray(~intersectionFlagsArray) = [];
+            facesObjectIDArray = facesObjectIDArray';
+            
+            % Group elements of facesObjectIDArray by relevant rays.
+            facesObjectIDArray = mat2cell(facesObjectIDArray,portions',1);
             
             for iRay = 1:nPixels
                 % Select intersectionFlags of current ray.
@@ -179,11 +226,6 @@ while doRetry
                     continue
                 end
                 
-                % Select intersectionDistances of current ray.
-                intersectionDistances = intersectionDistancesArray(iRay,:);
-                
-                % Keep only relevant distances.
-                intersectionDistances = intersectionDistances(intersectionFlags);
                 
                 % Get relevant facesObjectIDs.
                 facesObjectIDs = mesh.facesObjectIDs(intersectionFlags);
