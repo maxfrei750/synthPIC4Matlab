@@ -7,6 +7,6 @@ validateattributes( ...
     {'numeric','gpuArray'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','integer'});
 
-tf = logical(mod(number,2));
+tf = logical(~mod(number,2));
 end
 
