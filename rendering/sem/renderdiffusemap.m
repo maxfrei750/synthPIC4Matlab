@@ -7,48 +7,28 @@ detectorPosition = [-1000 -500 3000];
 
 baseColor = ones(1,3)*1;
 
-% Enable hardware-rendering
-opengl hardware
-
 %% Render the geometry.
 % Set figure properties.
 hFigure = figure;
 hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
-hFigure.Units = 'normalized';
-hFigure.OuterPosition = [0 0 1 1];
-
-hFigure.Units = 'pixels';
-hFigure.Position = [0 0 width+1 height+1];
-
-% Set axis properties.
-daspect([1 1 1]);
-view(2)
-hAxis = gca;
-hAxis.Visible = 'off';
-hAxis.Units = 'pixels';
-hAxis.Position = [0 0 width+1 height+1];
-
-hAxis.YLim = [0 height];
-hAxis.XLim = [0 width];
-
 % Draw the current geometry.
-hPatch = drawMesh(mesh);
+hPatch = mesh.draw;
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
-set(hPatch,fphong,'FaceVertexCData',mesh.texture);
-
-material dull
 
 % Set light properties.
+material dull
 hLight = light;
 hLight.Position = detectorPosition;
 hLight.Style = 'local';
 
-frame = getframe(hAxis);
-diffuseMap = frame2im(frame);
+% Convert figure to image.
+diffuseMap = figure2image(hFigure,width,height);
+
+% Close figure.
 close(hFigure);
 
 % Remove redundant color channels.
