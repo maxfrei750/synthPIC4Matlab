@@ -77,6 +77,9 @@ transmissionCoefficient = p.Results.transmissionCoefficient;
 relativeResolution = p.Results.relativeResolution;
 
 %% Rendering
+% Get binaryObjectMask.
+[~,binaryObjectMask] = renderobjectmask(mesh,width,height);
+
 % Extract vertices, faces from mesh.
 vertices = mesh.vertices;
 faces = mesh.faces;
@@ -85,6 +88,9 @@ faces = mesh.faces;
 P0 = vertices(faces(:,1),:);
 P1 = vertices(faces(:,2),:);
 P2 = vertices(faces(:,3),:);
+
+% Calculate number of polygons.
+nPolygons = size(faces,1);
 
 % Set the ray origin to the center of the bounding box in x- and y- and to
 % quasi-infinity in z- direction.
@@ -124,6 +130,10 @@ while doRetry
             
             y_max = clip(y_max,0,height);
             
+            % Select tile of the binaryObjectMask.
+            binaryObjectMaskTile = ...
+                binaryObjectMask(y_min+1:y_max,x_min+1:x_max);
+            
             % Calculate the coordinates of the pixels of the virtual imaging screen.
             x_steps = linspace( ...
                 floor(x_min)+0.5, ...
@@ -158,14 +168,24 @@ while doRetry
             rayDirections_in = normalizeVector3d(pixelCentroids-rayOrigin);
             rayDirections_in = gpuArray(rayDirections_in);
             
+            % Initialize intersectionDistancesArray and
+            % intersectionFlagsArray.
+            intersectionDistancesArray = NaN(nRays,nPolygons,'gpuArray');
+            intersectionFlagsArray = false(nRays,nPolygons,'gpuArray');
+            
+            isRelevantRay = binaryObjectMaskTile(:);
+            relevantRayIndex = gpuArray(1:nRays);
+            relevantRayIndex = relevantRayIndex(isRelevantRay);
+            
             % Calculate the intersection distances of each incident ray.
-            [intersectionDistancesArray, intersectionFlagsArray] = arrayfun(...
+            [intersectionDistancesArray(relevantRayIndex,:), ...
+                intersectionFlagsArray(relevantRayIndex,:)] = arrayfun(...
                 @rayTriGPU, ...
                 P0(:,1)', P0(:,2)', P0(:,3)', ...
                 P1(:,1)', P1(:,2)', P1(:,3)', ...
                 P2(:,1)', P2(:,2)', P2(:,3)', ...
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
-                rayDirections_in(:,1),rayDirections_in(:,2),rayDirections_in(:,3)); %#ok<*PFBNS>
+                rayDirections_in(relevantRayIndex,1),rayDirections_in(relevantRayIndex,2),rayDirections_in(relevantRayIndex,3)); %#ok<*PFBNS>
                         
             %% Initialization
             % Transpose ray tracing outputs.
