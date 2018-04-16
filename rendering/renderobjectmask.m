@@ -2,44 +2,29 @@ function objectMask = renderobjectmask(mesh,width,height)
 %RENDERDIFFUSEMAP Summary of this function goes here
 %   Detailed explanation goes here
 
-%% Set parameters.
-% Enable hardware-rendering
-opengl hardware
 
 %% Render the geometry.
 % Set figure properties.
 hFigure = figure;
 hFigure.Visible = 'off';
-hFigure.Color = [0 0 0];
+hFigure.Color = [1 1 1];
 
-hFigure.Units = 'normalized';
-hFigure.OuterPosition = [0 0 1 1];
+hAxis = axes;
+hAxis.Color = [1 1 1];
 
-hFigure.Units = 'pixels';
-hFigure.Position = [0 0 width+1 height+1];
-
-% Set axis properties.
-daspect([1 1 1]);
-view(2)
-hAxis = gca;
-hAxis.Visible = 'off';
-hAxis.Units = 'pixels';
-hAxis.Position = [0 0 width+1 height+1];
-
-hAxis.YLim = [0 height];
-hAxis.XLim = [0 width];
+% Set texture of the mesh to uniform white.
+mesh.texture = zeros(mesh.nVertices,3);
 
 % Draw the current geometry.
-hPatch = drawMesh(mesh);
+hPatch = mesh.draw;
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
-set(hPatch,fphong,'FaceVertexCData',ones(mesh.nVertices,3));
 
-material dull
+% Convert figure to image.
+objectMask = figure2image(hFigure,width,height);
 
-frame = getframe(hAxis);
-objectMask = frame2im(frame);
+% Close figure.
 close(hFigure);
 
 % Remove redundant color channels.
@@ -48,6 +33,9 @@ objectMask = im2double(objectMask);
 
 % Flip diffuse map.
 objectMask = flipud(objectMask);
+
+% Invert objectmask.
+objectMask = imcomplement(objectMask);
 
 %% Push data to gpu, if one is available.
 if isgpuavailable

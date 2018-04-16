@@ -5,56 +5,33 @@ function curvatureMap = rendercurvaturemap(mesh,width,height)
 %% Set parameters.
 baseColor = ones(1,3)*0.5;
 
-% Enable hardware-rendering
-opengl hardware
-
 %% Render the geometry.
 % Set figure properties.
 hFigure = figure;
 hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
-hFigure.Units = 'normalized';
-hFigure.OuterPosition = [0 0 1 1];
-
-hFigure.Units = 'pixels';
-hFigure.Position = [0 0 width+1 height+1];
-
-% Set axis properties.
-daspect([1 1 1]);
-view(2)
-hAxis = gca;
-hAxis.Visible = 'off';
-hAxis.Units = 'pixels';
-hAxis.Position = [0 0 width+1 height+1];
-
-hAxis.YLim = [0 height];
-hAxis.XLim = [0 width];
-
-vertices = mesh.vertices;
-faces = mesh.faces;
-
 % Get vertex curvatures.
-vertexCurvatures = meshVertexCurvature(vertices,faces); 
+vertexCurvatures = meshVertexCurvature(mesh.vertices,mesh.faces); 
 
 % Normalize vertexCurvatures.
 vertexCurvatures(end+1) = 0;
 vertexCurvatures = mat2gray(vertexCurvatures);
 vertexCurvatures(end) = [];
 
+% Set texture.
+mesh.texture = repmat(vertexCurvatures,1,3);
+
 % Draw the current geometry.
-hPatch = drawMesh(vertices,faces);
+hPatch = mesh.draw;
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
 
-set(hPatch, ...
-    fphong, ...
-    'FaceVertexCData',repmat(vertexCurvatures,1,3));
+% Convert figure to image.
+curvatureMap = figure2image(hFigure,width,height);
 
-%% Convert figure to image.
-frame = getframe(hAxis);
-curvatureMap = frame2im(frame);
+% Close figure.
 close(hFigure);
 
 % Remove redundant color channels.
