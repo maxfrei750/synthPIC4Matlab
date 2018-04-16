@@ -1,4 +1,4 @@
-function objectMask = renderobjectmask(mesh,width,height)
+function [objectMask,binaryObjectMask] = renderobjectmask(mesh,width,height)
 %RENDERDIFFUSEMAP Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -40,6 +40,10 @@ objectMask = imcomplement(objectMask);
 %% Push data to gpu, if one is available.
 if isgpuavailable
     objectMask = gpuArray(objectMask);
+end
+
+if nargout==2
+     binaryObjectMask = objectMask>0;
 end
 
 end
