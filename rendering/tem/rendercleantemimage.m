@@ -17,7 +17,7 @@ function cleanTemImage = rendercleantemimage(mesh,width,height,varargin)
 %
 %   'tileSize' - Sidelength of the square tiles, which are rendered.
 %                Affects the memory consumption and the render speed.
-%                Default: 500
+%                Default: 512
 %
 %   'relativeResolution' - Sets the rendering resolution.
 %                          Example: for 'relativeResolution', 0.5 only
@@ -183,7 +183,8 @@ while doRetry
             intersectionFlagsArray = intersectionFlagsArray(orderIndices);
             facesObjectIDArray = facesObjectIDArray(orderIndices);
              
-            %% Group rays.
+            %% Group rays. 
+            % Maybe don't use indices, but logical indexing?
             
             rayIndices = 1:nRays;
             nHitsArray = sum(intersectionFlagsArray,1);
@@ -226,106 +227,41 @@ while doRetry
             transmissionDistances(rayIndices_2Hits) = ...
                 max(intersectionDistancesArray(:,rayIndices_2Hits)) - ...
                 min(intersectionDistancesArray(:,rayIndices_2Hits));
-            
-            %% Restructuring of the ray tracing outputs.
-            % Remove NaNs from intersectionDistancesArray.
-            intersectionDistancesArray(~intersectionFlagsArray) = [];
-            intersectionDistancesArray = intersectionDistancesArray';
-            
-            % Group elements of intersectionDistancesArray by relevant rays.
-            portions = sum(intersectionFlagsArray,1);
-            portions = portions(portions~=0);
-            portions = gather(portions);
-            
-            intersectionDistancesArray = mat2cell(intersectionDistancesArray,portions',1);
-           
-            % Remove faceObjectIDs, which are not associated with
-            % intersected faces.
-            facesObjectIDArray(~intersectionFlagsArray) = [];
-            facesObjectIDArray = facesObjectIDArray';
-            
-            % Group elements of facesObjectIDArray by relevant rays.
-            facesObjectIDArray = mat2cell(facesObjectIDArray,portions',1);
-            
-%             % Make a list of indices for the intersected faces of each ray.
-%             indices = num2cell(portions');
-%             indices = cellfun(@(x) 1:x,indices,'UniformOutput',false);
-                        
-            for iRelevantRay = 1:nRelevantRays
-                % Select intersectionFlags of current ray.
-                intersectionFlags = intersectionFlagsArray(iRay,:);
                 
-                % If no intersections occured, then continue.
-                if ~any(intersectionFlags)
-                    continue
-                end
+            %% Treat even 4+ hit rays.   
+            
+            for iRay = rayIndices_4HitsPlus
+                % Select data of current ray.
+                intersectionFlags = intersectionFlagsArray(:,iRay);   
+                intersectionDistances = intersectionDistancesArray(:,iRay);
                 
-                
-                % Get relevant facesObjectIDs.
-                facesObjectIDs = mesh.facesObjectIDs(intersectionFlags);
-                
-                % Order distances and facesObjectIDs according to distances.
-                [intersectionDistances,orderIndices] = sort(intersectionDistances);
-                facesObjectIDs = facesObjectIDs(orderIndices);
-                
+                facesObjectIDs = facesObjectIDArray(:,iRay);
+                facesObjectIDs = facesObjectIDs(intersectionFlags);
+                               
                 nRelevantFaceObjectIDs = size(facesObjectIDs,1);
                 
                 index = (1:nRelevantFaceObjectIDs)';
-%                 isEven = @(x) ~mod(x,2);
+                
                 
                 doKeep = ...
                     index == 1 | ...    % first element
-                    index == nRelevantFaceObjectIDs & isEven(index) | ...  % last element, if its index is even
-                    index == nRelevantFaceObjectIDs-1 & isEven(index) | ...  % last but one element, if its index is even
+                    index == nRelevantFaceObjectIDs | ...
                     facesObjectIDs(index) == [facesObjectIDs(index(1:end-1)+1);NaN] & ~isEven(index) | ...
                     facesObjectIDs(index) == [NaN;facesObjectIDs(index(2:end)-1)] & isEven(index);
                 
                 intersectionDistances = intersectionDistances(doKeep);
                 
-                transmissionDistances = intersectionDistances-[0 intersectionDistances(1:end-1)];
-                transmissionDistances = transmissionDistances(2:2:end);
+                objectTransmissionDistances = intersectionDistances-[0;intersectionDistances(1:end-1)];
+                objectTransmissionDistances = objectTransmissionDistances(2:2:end);
                 
-                totalTransmissionDistances(iRay) = sum(transmissionDistances);
+                transmissionDistances(iRay) = sum(objectTransmissionDistances);
             end
-            %             %% for testing -------------------------------------
-            %             linearIdx = 80*nPixels_y+45;
-            %             testFlags = gather(intersectionFlags(linearIdx,:));
-            %             testDistances = gather(intersectionDistances(linearIdx,:));
-            %
-            %             % Keep only relevant distances.
-            %             testDistances = testDistances(testFlags);
-            %
-            %             % Keep only relevant facesObjectIDs.
-            %             facesObjectIDs = facesObjectIDs(testFlags);
-            %
-            %             % Order distances and objectIDs according to distances.
-            %             [testDistances,orderIdx] = sort(testDistances);
-            %             facesObjectIDs = facesObjectIDs(orderIdx);
-            %
-            %             nRelevantFaceObjectIDs = size(facesObjectIDs,1);
-            %
-            %             index = (1:nRelevantFaceObjectIDs)';
-            %             isEven = @(x) ~mod(x,2);
-            %
-            %
-            %             doKeep = ...
-            %                 index == 1 | ...    % first element
-            %                 index == nRelevantFaceObjectIDs & isEven(index) | ...  % last element, if its index is even
-            %                 index == nRelevantFaceObjectIDs-1 & isEven(index) | ...  % last but one element, if its index is even
-            %                 facesObjectIDs(index) == [facesObjectIDs(index(1:end-1)+1);NaN] & ~isEven(index) | ...
-            %                 facesObjectIDs(index) == [NaN;facesObjectIDs(index(2:end)-1)] & isEven(index);
-            %
-            %             testDistances = testDistances(doKeep);
-            %
-            %             transmissionDistances = testDistances-[0 testDistances(1:end-1)];
-            %             transmissionDistances = transmissionDistances(2:2:end);
-            %             %% -------------------------------------------------
-            
+
             % Free memory on GPU.
-            [~] = gather(intersectionDistances);
+%             [~] = gather(intersectionDistances);
             
             % Reshape the data to get a thickness map.
-            transmissionDistanceMapTile = reshape(totalTransmissionDistances,nPixels_y,nPixels_x);
+            transmissionDistanceMapTile = reshape(transmissionDistances,nPixels_y,nPixels_x);
             
             % Save tile.
             transmissionDistanceMapTiles{iTile} = ...
