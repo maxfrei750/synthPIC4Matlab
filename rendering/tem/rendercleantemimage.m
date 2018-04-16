@@ -166,31 +166,68 @@ while doRetry
                 P2(:,1)', P2(:,2)', P2(:,3)', ...
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
                 rayDirections_in(:,1),rayDirections_in(:,2),rayDirections_in(:,3)); %#ok<*PFBNS>
-            
-            % make the huge numbers readable for humans. can be removed
-            % later
-            intersectionDistancesArray = intersectionDistancesArray-min(intersectionDistancesArray);
-              
-            % Transpose ray tracing output.
+                        
+            %% Initialization
+            % Transpose ray tracing outputs.
             intersectionDistancesArray = intersectionDistancesArray';
             intersectionFlagsArray  = intersectionFlagsArray';
+            % Duplicate facesObjectIDs for every ray.
+            facesObjectIDArray = repmat(gpuArray(mesh.facesObjectIDs'),1,nRays);
             
+            %% Sorting
             % Sort the intersectionDistancesArray and save the orderIndices
-             [intersectionDistancesArray,orderIndices] = sort(intersectionDistancesArray,1);    
-             orderIndices = matrixorder2linearorder(orderIndices,1);
+            % to sort the other arrays.
+            [intersectionDistancesArray,orderIndices] = sort(intersectionDistancesArray,1);     %#ok<UDIM>
+            orderIndices = matrixorder2linearorder(orderIndices,1);
             
-             intersectionFlagsArray = intersectionFlagsArray(orderIndices);
+            intersectionFlagsArray = intersectionFlagsArray(orderIndices);
+            facesObjectIDArray = facesObjectIDArray(orderIndices);
+             
+            %% Group rays.
             
-            % Initialize array for totalTransmissionDistances.
-            totalTransmissionDistances = zeros(1,nPixels,'gpuArray');
+            rayIndices = 1:nRays;
+            nHitsArray = sum(intersectionFlagsArray,1);
             
-            % Determine relevant rays, i.e. they hit the geometry.
-            isRelevantRay = any(intersectionFlagsArray,1);
+            % 0 hit rays
+            isHitRay_0 = nHitsArray == 0;
+            rayIndices_0Hits = rayIndices(isHitRay_0);
             
-            relevantRayIndices = 1:nRays;
-            relevantRayIndices = relevantRayIndices(isRelevantRay)';
-            nRelevantRays = sum(isRelevantRay);
+            % uneven hit rays
+            isHitRay_unevenNumberOfHits = ~isEven(nHitsArray);
+            rayIndices_unevenNumberOfHits = ...
+                rayIndices(isHitRay_unevenNumberOfHits);
+
+            % 2 hit rays
+            isHitRay_2 = nHitsArray == 2;
+            rayIndices_2Hits = rayIndices(isHitRay_2);
             
+            % 4+ even hit rays
+            isHitRay_even4plus = nHitsArray >= 4 & isEven(nHitsArray);
+            rayIndices_4HitsPlus = rayIndices(isHitRay_even4plus);
+            
+            %% Initialize transmissionDistanceMapTile.
+            transmissionDistances = zeros(nRays,1,'gpuArray');
+            
+            %% Treat 0 hit rays.
+            % Could be ommited, because transmissionDistances was
+            % initialized with 0. However, this is more robust.
+            transmissionDistances(rayIndices_0Hits) = 0;
+            
+            %% Treat rays with an uneven number of hits.
+            % Rays with an uneven number of hits are assumed to never leave
+            % some geometry, because there is no outgoing intersection.
+            % Therefore, the transmission distance is infinite.
+            transmissionDistances(rayIndices_unevenNumberOfHits) = inf;
+            
+            %% Treat 2 hit rays.
+            % For rays with just 2 hits, the transmssion distance can be
+            % calculated based on the minimum and maximum transmission
+            % distance.
+            transmissionDistances(rayIndices_2Hits) = ...
+                max(intersectionDistancesArray(:,rayIndices_2Hits)) - ...
+                min(intersectionDistancesArray(:,rayIndices_2Hits));
+            
+            %% Restructuring of the ray tracing outputs.
             % Remove NaNs from intersectionDistancesArray.
             intersectionDistancesArray(~intersectionFlagsArray) = [];
             intersectionDistancesArray = intersectionDistancesArray';
@@ -201,23 +238,20 @@ while doRetry
             portions = gather(portions);
             
             intersectionDistancesArray = mat2cell(intersectionDistancesArray,portions',1);
-            
-            % Duplicate facesObjectIDs for every ray.
-            facesObjectIDArray = repmat(gpuArray(mesh.facesObjectIDs'),1,nRays);
-            % Sort facesObjectIDs according to the interSectionsDistances
-            % of the faces.
-            facesObjectIDArray = facesObjectIDArray(orderIndices);
-            
+           
             % Remove faceObjectIDs, which are not associated with
             % intersected faces.
-            %facesObjectIDArray = facesObjectIDArray(relevantRayIndices,:);
             facesObjectIDArray(~intersectionFlagsArray) = [];
             facesObjectIDArray = facesObjectIDArray';
             
             % Group elements of facesObjectIDArray by relevant rays.
             facesObjectIDArray = mat2cell(facesObjectIDArray,portions',1);
             
-            for iRay = 1:nPixels
+%             % Make a list of indices for the intersected faces of each ray.
+%             indices = num2cell(portions');
+%             indices = cellfun(@(x) 1:x,indices,'UniformOutput',false);
+                        
+            for iRelevantRay = 1:nRelevantRays
                 % Select intersectionFlags of current ray.
                 intersectionFlags = intersectionFlagsArray(iRay,:);
                 
@@ -237,7 +271,7 @@ while doRetry
                 nRelevantFaceObjectIDs = size(facesObjectIDs,1);
                 
                 index = (1:nRelevantFaceObjectIDs)';
-                isEven = @(x) ~mod(x,2);
+%                 isEven = @(x) ~mod(x,2);
                 
                 doKeep = ...
                     index == 1 | ...    % first element
