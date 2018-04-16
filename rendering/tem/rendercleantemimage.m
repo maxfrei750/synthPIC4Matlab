@@ -113,7 +113,7 @@ while doRetry
         transmissionDistanceMapTiles = cell(nTiles_x,nTiles_y);
         
         % Render on multiple GPUs if available.
-        for iTile = 1:nTiles
+        parfor iTile = 1:nTiles
             
             % Calculate current tile indices in x- andy y- direction.
             iTile_x = mod(iTile-1,nTiles_x)+1;
@@ -192,17 +192,8 @@ while doRetry
             intersectionDistancesArray = intersectionDistancesArray';
             intersectionFlagsArray  = intersectionFlagsArray';
             % Duplicate facesObjectIDs for every ray.
-            facesObjectIDArray = repmat(gpuArray(mesh.facesObjectIDs'),1,nRays);
-            
-            %% Sorting
-            % Sort the intersectionDistancesArray and save the orderIndices
-            % to sort the other arrays.
-            [intersectionDistancesArray,orderIndices] = sort(intersectionDistancesArray,1);     %#ok<UDIM>
-            orderIndices = matrixorder2linearorder(orderIndices,1);
-            
-            intersectionFlagsArray = intersectionFlagsArray(orderIndices);
-            facesObjectIDArray = facesObjectIDArray(orderIndices);
-             
+            facesObjectIDArray = repmat(gpuArray(mesh.facesObjectIDs),1,nRays);
+                        
             %% Group rays. 
             % Maybe don't use indices, but logical indexing?
             
@@ -251,18 +242,25 @@ while doRetry
             %% Treat even 4+ hit rays.   
             
             for iRay = rayIndices_4HitsPlus
-                % Select data of current ray.
-                intersectionFlags = intersectionFlagsArray(:,iRay);   
+                % Select data of current ray.  
                 intersectionDistances = intersectionDistancesArray(:,iRay);
-                
+                intersectionFlags = intersectionFlagsArray(:,iRay); 
                 facesObjectIDs = facesObjectIDArray(:,iRay);
+                
+                % Sort intersectionDistances, intersectionFlags and
+                % facesObjectIDs according to intersectionDistances.
+                [intersectionDistances,orderedIndices] = ...
+                    sort(intersectionDistances);
+                intersectionFlags = intersectionFlags(orderedIndices);
+                facesObjectIDs = facesObjectIDs(orderedIndices);
+                
+                % Keep only facesObjectIDs of intersected faces.
                 facesObjectIDs = facesObjectIDs(intersectionFlags);
                                
                 nRelevantFaceObjectIDs = size(facesObjectIDs,1);
                 
                 index = (1:nRelevantFaceObjectIDs)';
-                
-                
+                             
                 doKeep = ...
                     index == 1 | ...    % first element
                     index == nRelevantFaceObjectIDs | ...
