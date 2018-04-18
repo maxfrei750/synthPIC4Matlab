@@ -99,7 +99,7 @@ switch obj.type
         primitive = createDodecahedron;
         primitive.vertices = primitive.vertices*0.5;
     case 'icosahedron'
-        primitive = createIcosahedron(2);
+        primitive = createIcosahedron;
         primitive.vertices = primitive.vertices*0.525731112119134;
         primitive.vertices = primitive.vertices-[0 0 0.5];
     case 'octahedron'
@@ -109,7 +109,7 @@ switch obj.type
         primitive = createRhombododecahedron;
         primitive.vertices = primitive.vertices*0.25;
     case 'sphere'
-        primitive = createIcosphere(2);
+        primitive = createIcosphere;
         primitive.vertices = primitive.vertices*0.5;
     case 'tetrahedron'
         primitive = createTetrahedron;
