@@ -2,14 +2,15 @@
 clear
 close all
 
-rng(7);
+for randomSeed = 1:1
+rng(randomSeed);
 
 %% Parameters
 tic;
-imageWidth = 100;
-imageHeight = 100;
+imageWidth = 1280;
+imageHeight = 960;
 
-nObjects = 2;
+nObjects = 30;
 minMaxDiameter = [50 100];
 
 
@@ -22,12 +23,12 @@ for iObject = 1:nObjects
     
     object = Geometry('sphere',diameter);
     
-%     object.subdivisionLevel = 4;
-%     object.smoothingLevel = 1;
-%     object.rotationAxisDirection = rand(1,3);
-%     object.rotationAngleDegree = rand*360;
+%     object.subdivisionLevel = 1;
+%     object.smoothingLevel = 0;
+    object.rotationAxisDirection = rand(1,3);
+    object.rotationAngleDegree = rand*360;
 
-    object.position = [randd([0 imageWidth]) randd([0 imageHeight]) randd([0 200])];
+    object.position = [randd([0 imageWidth]) randd([0 imageHeight]) diameter/2];
     
     objectMesh = objectMesh+object.mesh;
 end
@@ -40,35 +41,43 @@ cleanTemImage = ...
     imageWidth, ...
     imageHeight, ...
     'transmissionCoefficient',0.01, ...
-    'tileSize',250, ...
+    'tileSize',128, ...
     'relativeResolution',1);
 
+figure
 imshow(cleanTemImage);
 
 toc;
+end
 
-% %% Post processing.
-% distortedSemImage = cleanSemImage;
-% 
-% 
-% % Add a background texture.
-% backgroundTextureScale = [1 1];
-% 
-% backgroundTexture = fbm(ceil(imageHeight/backgroundTextureScale(2)),ceil(imageWidth/backgroundTextureScale(1)))+0.2;
-% backgroundTexture = imresize(backgroundTexture,[imageHeight imageWidth]);
-% backgroundTexture = imcomplement(imcomplement(backgroundTexture).*imcomplement(objectMask));
-% 
-% distortedSemImage = distortedSemImage.*backgroundTexture;
-% 
-% % Add blur.
-% distortedSemImage = imgaussfilt(distortedSemImage,1);
-% 
-% % Add noise.
-% distortedSemImage = imnoise(distortedSemImage,'gaussian',0,0.001);
-% 
-% figure
-% montage(cellfun(@(x) gather(x),{diffuseMap,shadowMap,curvatureMap,cleanSemImage},'UniformOutput',false));
-% 
-% figure
-% imshow(distortedSemImage);
-% % imshow(shadowMap);
+%% Post processing.
+distortedTemImage = cleanTemImage;
+
+% Add a background texture.
+backgroundNoiseScale = [5 5];
+
+noiseWidth = round(imageWidth/backgroundNoiseScale(2));
+noiseHeight = round(imageHeight/backgroundNoiseScale(1));
+
+background  = mat2gray(randn(noiseHeight,noiseWidth));
+background = background-0.5;
+background = background*0.1;
+background = background+0.8;
+background = clip(background,0,1);
+
+% Clip noise.
+background = clip(background,0,1);
+
+background = imresize(background,[imageHeight imageWidth]);
+
+distortedTemImage = distortedTemImage.*background;
+
+% Add blur.
+distortedTemImage = imgaussfilt(distortedTemImage,1);
+
+% Add noise.
+distortedTemImage = imnoise(distortedTemImage,'gaussian',0,0.0001);
+
+figure
+imshow(distortedTemImage);
+% imshow(shadowMap);
