@@ -89,8 +89,8 @@ P0 = vertices(faces(:,1),:);
 P1 = vertices(faces(:,2),:);
 P2 = vertices(faces(:,3),:);
 
-% Calculate number of polygons.
-nPolygons = size(faces,1);
+% Calculate number of faces.
+nFaces = size(faces,1);
 
 % Set the ray origin to the center of the bounding box in x- and y- and to
 % quasi-infinity in z- direction.
@@ -113,7 +113,7 @@ while doRetry
         transmissionDistanceMapTiles = cell(nTiles_x,nTiles_y);
         
         % Render on multiple GPUs if available.
-        parfor iTile = 1:nTiles
+        for iTile = 1:nTiles
             
             % Calculate current tile indices in x- andy y- direction.
             iTile_x = mod(iTile-1,nTiles_x)+1;
@@ -168,31 +168,47 @@ while doRetry
             rayDirections_in = normalizeVector3d(pixelCentroids-rayOrigin);
             rayDirections_in = gpuArray(rayDirections_in);
             
-            % Initialize intersectionDistancesArray and
-            % intersectionFlagsArray.
-            intersectionDistancesArray = NaN(nRays,nPolygons,'gpuArray');
-            intersectionFlagsArray = false(nRays,nPolygons,'gpuArray');
+            % Determine relevant faces.
+%             relevantFaceIndices = getrelevantfaces(vertices,faces,pixelCentroids_x,pixelCentroids_y);
+            relevantFaceIndices = 1:nFaces;
             
+            nRelevantFaces = numel(relevantFaceIndices);
+            
+            % Determine relevant rays.
             isRelevantRay = binaryObjectMaskTile(:);
-            relevantRayIndex = gpuArray(1:nRays);
-            relevantRayIndex = relevantRayIndex(isRelevantRay);
+            relevantRayIndices = gpuArray(1:nRays);
+            relevantRayIndices = relevantRayIndices(isRelevantRay);
+            nRelevantRays = numel(relevantRayIndices);
+            
+            % If there are no relevant rays or faces, then set the
+            % transmission distances of all pixels of the current tile to
+            % zero and continue
+            if nRelevantRays == 0 || nRelevantFaces == 0
+                transmissionDistanceMapTiles{iTile} = ...
+                    zeros(nPixels_y,nPixels_x);
+                
+                continue
+            end
+            
+            % Initialize intersectionDistancesArray and
+            % intersectionFlagsArray.            
+            intersectionDistancesArray = NaN(nRays,nRelevantFaces,'gpuArray');
+            intersectionFlagsArray = false(nRays,nRelevantFaces,'gpuArray');
             
             % Calculate the intersection distances of each incident ray.
-            [intersectionDistancesArray(relevantRayIndex,:), ...
-                intersectionFlagsArray(relevantRayIndex,:)] = arrayfun(...
+            [intersectionDistancesArray(relevantRayIndices,:), ...
+                intersectionFlagsArray(relevantRayIndices,:)] = arrayfun(...
                 @rayTriGPU, ...
-                P0(:,1)', P0(:,2)', P0(:,3)', ...
-                P1(:,1)', P1(:,2)', P1(:,3)', ...
-                P2(:,1)', P2(:,2)', P2(:,3)', ...
+                P0(relevantFaceIndices,1)', P0(relevantFaceIndices,2)', P0(relevantFaceIndices,3)', ...
+                P1(relevantFaceIndices,1)', P1(relevantFaceIndices,2)', P1(relevantFaceIndices,3)', ...
+                P2(relevantFaceIndices,1)', P2(relevantFaceIndices,2)', P2(relevantFaceIndices,3)', ...
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
-                rayDirections_in(relevantRayIndex,1),rayDirections_in(relevantRayIndex,2),rayDirections_in(relevantRayIndex,3)); %#ok<*PFBNS>
+                rayDirections_in(relevantRayIndices,1),rayDirections_in(relevantRayIndices,2),rayDirections_in(relevantRayIndices,3)); %#ok<*PFBNS>
                         
             %% Initialization
             % Transpose ray tracing outputs.
             intersectionDistancesArray = intersectionDistancesArray';
             intersectionFlagsArray  = intersectionFlagsArray';
-            % Duplicate facesObjectIDs for every ray.
-            facesObjectIDArray = repmat(gpuArray(mesh.facesObjectIDs),1,nRays);
                         
             %% Group rays. 
             % Maybe don't use indices, but logical indexing?
@@ -245,7 +261,7 @@ while doRetry
                 % Select data of current ray.  
                 intersectionDistances = intersectionDistancesArray(:,iRay);
                 intersectionFlags = intersectionFlagsArray(:,iRay); 
-                facesObjectIDs = facesObjectIDArray(:,iRay);
+                facesObjectIDs = mesh.facesObjectIDs;
                 
                 % Sort intersectionDistances, intersectionFlags and
                 % facesObjectIDs according to intersectionDistances.
@@ -275,7 +291,7 @@ while doRetry
                 transmissionDistances(iRay) = sum(objectTransmissionDistances);
             end
 
-            % Free memory on GPU.
+%             % Free memory on GPU.
 %             [~] = gather(intersectionDistances);
             
             % Reshape the data to get a thickness map.
@@ -295,7 +311,7 @@ while doRetry
         switch matlabError.identifier
             case {'parallel:gpu:array:OOM','parallel:gpu:array:pmaxsize'}
                 tileSize = round(tileSize/2);
-                warning('Out of memory. Trying to rerender with a ''tileSize'' of %d.',tileSize);
+                warning('Out of memory. Trying to re-render with a ''tileSize'' of %d.',tileSize);
             otherwise %If another error was thrown, rethrow it.
                 rethrow(matlabError)
         end
