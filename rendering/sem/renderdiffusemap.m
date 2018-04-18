@@ -3,9 +3,9 @@ function diffuseMap = renderdiffusemap(mesh,width,height)
 %   Detailed explanation goes here
 
 %% Set parameters.
-detectorPosition = [-1000 -500 3000];
+detectorPosition = [-width height/2 3000];
 
-baseColor = ones(1,3)*1;
+baseColor = ones(1,3);
 
 %% Render the geometry.
 % Set figure properties.
@@ -14,6 +14,7 @@ hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
 % Draw the current geometry.
+mesh.texture = ones(mesh.nVertices,3);
 hPatch = mesh.draw;
 
 % Set patch properties.
@@ -23,7 +24,6 @@ hPatch.EdgeColor = 'none';
 material dull
 hLight = light;
 hLight.Position = detectorPosition;
-hLight.Style = 'local';
 
 % Convert figure to image.
 diffuseMap = figure2image(hFigure,width,height);
