@@ -25,10 +25,10 @@ for iObject = 1:nObjects
     
 %     object.subdivisionLevel = 1;
 %     object.smoothingLevel = 0;
-    object.rotationAxisDirection = rand(1,3);
-    object.rotationAngleDegree = rand*360;
+%     object.rotationAxisDirection = rand(1,3);
+%     object.rotationAngleDegree = rand*360;
 
-    object.position = [randd([0 imageWidth]) randd([0 imageHeight]) diameter/2];
+    object.position = [randd([0 imageWidth]) randd([0 imageHeight]) randd([0 diameter])];
     
     objectMesh = objectMesh+object.mesh;
 end
@@ -41,7 +41,7 @@ cleanTemImage = ...
     imageWidth, ...
     imageHeight, ...
     'transmissionCoefficient',0.01, ...
-    'tileSize',128, ...
+    'tileSize',64, ...
     'relativeResolution',1);
 
 figure
