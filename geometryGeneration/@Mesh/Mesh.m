@@ -19,6 +19,7 @@ classdef Mesh
         nEdges
         nFaces
         centerOfMass
+        vertexNormals
     end
     
     methods
@@ -93,6 +94,10 @@ classdef Mesh
                 getrandompointsinmesh(obj,nRandomPointsInVolume);
             
             centerOfMass = mean(randomPointsInVolume);
+        end
+        
+        function vertexNormals = get.vertexNormals(obj)
+            vertexNormals = meshVertexNormals(obj.vertices,obj.faces);
         end
     end
 end
