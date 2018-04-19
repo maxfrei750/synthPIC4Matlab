@@ -79,6 +79,7 @@ relativeResolution = p.Results.relativeResolution;
 %% Rendering
 % Get binaryObjectMask.
 [~,binaryObjectMask] = renderobjectmask(mesh,width,height);
+binaryObjectMask = gather(binaryObjectMask);
 
 % Extract vertices, faces from mesh.
 vertices = mesh.vertices;
@@ -132,7 +133,13 @@ while doRetry
             
             % Select tile of the binaryObjectMask.
             binaryObjectMaskTile = ...
-                binaryObjectMask(y_min+1:y_max,x_min+1:x_max);
+                im2single(binaryObjectMask(y_min+1:y_max,x_min+1:x_max));
+            % Resize binaryObjectMaskTile to match relativeResolution.
+            if relativeResolution ~= 1
+                binaryObjectMaskTile = ...
+                    imresize(binaryObjectMaskTile,relativeResolution,'nearest');
+                binaryObjectMaskTile = logical(binaryObjectMaskTile);
+            end
             
             % Calculate the coordinates of the pixels of the virtual imaging screen.
             x_steps = linspace( ...
