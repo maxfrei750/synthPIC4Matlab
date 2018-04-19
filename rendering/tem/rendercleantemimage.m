@@ -134,11 +134,16 @@ while doRetry
             % Select tile of the binaryObjectMask.
             binaryObjectMaskTile = ...
                 im2single(binaryObjectMask(y_min+1:y_max,x_min+1:x_max));
+            
             % Resize binaryObjectMaskTile to match relativeResolution.
             if relativeResolution ~= 1
                 binaryObjectMaskTile = ...
                     imresize(binaryObjectMaskTile,relativeResolution,'nearest');
                 binaryObjectMaskTile = logical(binaryObjectMaskTile);
+                
+                % Dilate binaryObjectMaskTile to ensure that object edges are
+                % covered sufficiently.
+                binaryObjectMaskTile = imdilate(binaryObjectMaskTile,strel('disk',1));
             end
             
             % Calculate the coordinates of the pixels of the virtual imaging screen.
