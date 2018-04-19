@@ -28,18 +28,23 @@ validateattributes( ...
     {'numeric'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar','positive'});
 
+% Set cropping buffer
+croppingBuffer = 10;
+
 % Try to use a hardware renderer.
 opengl hardware
 
 % Set figure properties.
 hFigure.Units = 'normalized';
-hFigure.OuterPosition = [0 0 1 1];
+hFigure.OuterPosition = [0 0 0.5 0.5];
 
 hFigure.Units = 'normalized';
 hFigure.Position = [0 0 1 1];
 
 hFigure.PaperUnits = 'inches';
-hFigure.PaperPosition = [0 0 imageWidth imageHeight]/resolutionDPI;
+hFigure.PaperPosition = ...
+    ([0 0 imageWidth imageHeight]+[0 0 2 2].*croppingBuffer) / ...
+    resolutionDPI;
 
 % Set properties of all axes.
 nAxes = numel(hFigure.Children);
@@ -53,11 +58,15 @@ for iAxis = 1:nAxes
     hAxis.Visible = 'off';
     hAxis.Units = 'normalized';
     hAxis.Position = [0 0 1 1];
-    hAxis.YLim = [0 imageHeight];
-    hAxis.XLim = [0 imageWidth];
+    hAxis.YLim = [0 imageHeight]+[-1 1].*croppingBuffer;
+    hAxis.XLim = [0 imageWidth]+[-1 1].*croppingBuffer;
 end
 
 % Generate image.
 image = print('-RGBImage',['-r' num2str(resolutionDPI)]);
+
+% Crop buffer to remove edge effects.
+image = ...
+    imcrop(image,[croppingBuffer+2 croppingBuffer imageWidth-1 imageHeight-1]);
 end
 
