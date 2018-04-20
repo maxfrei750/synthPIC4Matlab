@@ -7,10 +7,10 @@ rng(randomSeed);
 
 %% Parameters
 tic;
-imageWidth = 1280;
-imageHeight = 960;
+imageWidth = 128;
+imageHeight = 128;
 
-nObjects = 30;
+nObjects = 3;
 minMaxDiameter = [50 100];
 
 
@@ -41,11 +41,8 @@ cleanTemImage = ...
     imageWidth, ...
     imageHeight, ...
     'transmissionCoefficient',0.01, ...
-    'tileSize',64, ...
-    'relativeResolution',1);
-
-figure
-imshow(cleanTemImage);
+    'tileSize',128, ...
+    'relativeResolution',0.5);
 
 toc;
 end
