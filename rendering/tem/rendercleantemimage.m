@@ -284,27 +284,68 @@ while doRetry
                 
                 % Keep only facesObjectIDs of intersected faces.
                 facesObjectIDs = facesObjectIDs(intersectionFlags);
+                
+                nIntersections = size(facesObjectIDs,1);
+                alreadyEncounteredFacesObjectIDs = NaN(nIntersections,1);
+                
+                % skip first iteration
+                isInsideObjectCounter = 1;
+                alreadyEncounteredFacesObjectIDs(1) = facesObjectIDs(1);
+                relevantIntersectionDistances = intersectionDistances(1);
                                
-                nRelevantFaceObjectIDs = size(facesObjectIDs,1);
+                for iIntersection = 2:nIntersections
+                    facesObjectID = facesObjectIDs(iIntersection);
+                    
+                    wasIntersectedBefore = ...
+                        facesObjectID == alreadyEncounteredFacesObjectIDs;
+                                     
+                    if any(wasIntersectedBefore)
+                        % The ray is leaving an object.
+                        isInsideObjectCounter = isInsideObjectCounter-1;
+                        
+                        % If the ray is outside all objects now, then add
+                        % current intersectiondistance to the 
+                        % relevantIntersectionDistances.
+                        if isInsideObjectCounter == 0
+                            relevantIntersectionDistances(end+1) = ...
+                                intersectionDistances(iIntersection);
+                        end
+                        
+                        % Remove the facesObjectID from the list of 
+                        % alreadyEncounteredFacesObjectIDs, so that it will
+                        % be processed again, if the object is concave and
+                        % hit again by the current ray.
+                        alreadyEncounteredFacesObjectIDs(wasIntersectedBefore) = NaN;
+                        
+                    else
+                        % The ray is entering a new object.
+                        isInsideObjectCounter = isInsideObjectCounter+1;
+                        
+                        % Add the object to the
+                        % alreadyEncounteredFacesObjectIDs.
+                        alreadyEncounteredFacesObjectIDs(iIntersection) = ...
+                            facesObjectID;
+                        
+                        % If the ray is only inside a single object now, 
+                        % then add the current intersectiondistance to the 
+                        % relevantIntersectionDistances.
+                        if isInsideObjectCounter == 1
+                            relevantIntersectionDistances(end+1) = ...
+                                intersectionDistances(iIntersection);
+                        end
+                    end
+                end                       
+
+                % Calculate the transmissionDistance of the current ray.
+                objectTransmissionDistances = ...
+                    relevantIntersectionDistances - ...
+                    [0 relevantIntersectionDistances(1:end-1)];
                 
-                index = (1:nRelevantFaceObjectIDs)';
-                             
-                doKeep = ...
-                    index == 1 | ...    % first element
-                    index == nRelevantFaceObjectIDs | ...
-                    facesObjectIDs(index) == [facesObjectIDs(index(1:end-1)+1);NaN] & ~isEven(index) | ...
-                    facesObjectIDs(index) == [NaN;facesObjectIDs(index(2:end)-1)] & isEven(index);
-                
-                intersectionDistances = intersectionDistances(doKeep);
-                
-                objectTransmissionDistances = intersectionDistances-[0;intersectionDistances(1:end-1)];
-                objectTransmissionDistances = objectTransmissionDistances(2:2:end);
+                objectTransmissionDistances = ...
+                    objectTransmissionDistances(2:2:end);
                 
                 transmissionDistances(iRay) = sum(objectTransmissionDistances);
             end
-
-%             % Free memory on GPU.
-%             [~] = gather(intersectionDistances);
             
             % Reshape the data to get a thickness map.
             transmissionDistanceMapTile = reshape(transmissionDistances,nPixels_y,nPixels_x);
