@@ -216,12 +216,16 @@ while doRetry
                 P2(relevantFaceIndices,1)', P2(relevantFaceIndices,2)', P2(relevantFaceIndices,3)', ...
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
                 rayDirections_in(relevantRayIndices,1),rayDirections_in(relevantRayIndices,2),rayDirections_in(relevantRayIndices,3)); %#ok<*PFBNS>
-                        
+                       
             %% Initialization
             % Transpose ray tracing outputs.
             intersectionDistancesArray = intersectionDistancesArray';
             intersectionFlagsArray  = intersectionFlagsArray';
-                        
+            
+            % Gather data from 
+            intersectionDistancesArray = gather(intersectionDistancesArray);
+            intersectionFlagsArray = gather(intersectionFlagsArray);
+            
             %% Group rays. 
             % Maybe don't use indices, but logical indexing?
             
@@ -231,7 +235,7 @@ while doRetry
             % 0 hit rays
             isHitRay_0 = nHitsArray == 0;
             rayIndices_0Hits = rayIndices(isHitRay_0);
-            
+                       
             % uneven hit rays
             isHitRay_unevenNumberOfHits = ~isEven(nHitsArray);
             rayIndices_unevenNumberOfHits = ...
@@ -246,7 +250,7 @@ while doRetry
             rayIndices_4HitsPlus = rayIndices(isHitRay_even4plus);
             
             %% Initialize transmissionDistanceMapTile.
-            transmissionDistances = zeros(nRays,1,'gpuArray');
+            transmissionDistances = zeros(nRays,1);
             
             %% Treat 0 hit rays.
             % Could be ommited, because transmissionDistances was
@@ -267,8 +271,7 @@ while doRetry
                 max(intersectionDistancesArray(:,rayIndices_2Hits)) - ...
                 min(intersectionDistancesArray(:,rayIndices_2Hits));
                 
-            %% Treat even 4+ hit rays.   
-            
+            %% Treat even 4+ hit rays.            
             for iRay = rayIndices_4HitsPlus
                 % Select data of current ray.  
                 intersectionDistances = intersectionDistancesArray(:,iRay);
@@ -290,10 +293,12 @@ while doRetry
                 nIntersections = size(facesObjectIDs,1);
                 alreadyEncounteredFacesObjectIDs = NaN(nIntersections,1);
                 
+                relevantIntersectionDistances = NaN(nIntersections,1);
+                
                 % skip first iteration
                 isInsideObjectCounter = 1;
                 alreadyEncounteredFacesObjectIDs(1) = facesObjectIDs(1);
-                relevantIntersectionDistances = intersectionDistances(1);
+                relevantIntersectionDistances(1) = intersectionDistances(1);
                                
                 for iIntersection = 2:nIntersections
                     facesObjectID = facesObjectIDs(iIntersection);
@@ -309,7 +314,7 @@ while doRetry
                         % current intersectiondistance to the 
                         % relevantIntersectionDistances.
                         if isInsideObjectCounter == 0
-                            relevantIntersectionDistances(end+1) = ...
+                            relevantIntersectionDistances(iIntersection) = ...
                                 intersectionDistances(iIntersection);
                         end
                         
@@ -332,16 +337,19 @@ while doRetry
                         % then add the current intersectiondistance to the 
                         % relevantIntersectionDistances.
                         if isInsideObjectCounter == 1
-                            relevantIntersectionDistances(end+1) = ...
+                            relevantIntersectionDistances(iIntersection) = ...
                                 intersectionDistances(iIntersection);
                         end
                     end
                 end                       
 
+                % Remove NaNs from relevantIntersectionDistances.
+                relevantIntersectionDistances(isnan(relevantIntersectionDistances)) = [];
+                
                 % Calculate the transmissionDistance of the current ray.
                 objectTransmissionDistances = ...
                     relevantIntersectionDistances - ...
-                    [0 relevantIntersectionDistances(1:end-1)];
+                    [0;relevantIntersectionDistances(1:end-1)];
                 
                 objectTransmissionDistances = ...
                     objectTransmissionDistances(2:2:end);
