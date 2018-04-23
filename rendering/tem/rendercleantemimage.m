@@ -275,15 +275,17 @@ while doRetry
                 intersectionFlags = intersectionFlagsArray(:,iRay); 
                 facesObjectIDs = mesh.facesObjectIDs;
                 
-                % Sort intersectionDistances, intersectionFlags and
-                % facesObjectIDs according to intersectionDistances.
+                % Keep only intersectionDistances and facesObjectIDs of 
+                % intersected faces.
+                intersectionDistances = ...
+                    intersectionDistances(intersectionFlags);
+                facesObjectIDs = facesObjectIDs(intersectionFlags);
+                
+                % Sort intersectionDistances andfacesObjectIDs according to 
+                % intersectionDistances.
                 [intersectionDistances,orderedIndices] = ...
                     sort(intersectionDistances);
-                intersectionFlags = intersectionFlags(orderedIndices);
                 facesObjectIDs = facesObjectIDs(orderedIndices);
-                
-                % Keep only facesObjectIDs of intersected faces.
-                facesObjectIDs = facesObjectIDs(intersectionFlags);
                 
                 nIntersections = size(facesObjectIDs,1);
                 alreadyEncounteredFacesObjectIDs = NaN(nIntersections,1);
