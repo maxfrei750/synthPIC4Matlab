@@ -77,10 +77,6 @@ transmissionCoefficient = p.Results.transmissionCoefficient;
 relativeResolution = p.Results.relativeResolution;
 
 %% Rendering
-% Get binaryObjectMask.
-[~,binaryObjectMask] = renderobjectmask(mesh,width,height);
-binaryObjectMask = gather(binaryObjectMask);
-
 % Extract vertices, faces from mesh.
 vertices = mesh.vertices;
 faces = mesh.faces;
@@ -89,9 +85,6 @@ faces = mesh.faces;
 P0 = vertices(faces(:,1),:);
 P1 = vertices(faces(:,2),:);
 P2 = vertices(faces(:,3),:);
-
-% Calculate number of faces.
-nFaces = size(faces,1);
 
 % Set the ray origin to the center of the bounding box in x- and y- and to
 % quasi-infinity in z- direction.
@@ -130,22 +123,7 @@ while doRetry
             y_max = y_min+tileSize;
             
             y_max = clip(y_max,0,height);
-            
-            % Select tile of the binaryObjectMask.
-            binaryObjectMaskTile = ...
-                im2single(binaryObjectMask(y_min+1:y_max,x_min+1:x_max));
-            
-            % Resize binaryObjectMaskTile to match relativeResolution.
-            if relativeResolution ~= 1
-                binaryObjectMaskTile = ...
-                    imresize(binaryObjectMaskTile,relativeResolution,'nearest');
-                binaryObjectMaskTile = logical(binaryObjectMaskTile);
-                
-                % Dilate binaryObjectMaskTile to ensure that object edges are
-                % covered sufficiently.
-                binaryObjectMaskTile = imdilate(binaryObjectMaskTile,strel('disk',1));
-            end
-            
+                       
             % Calculate the coordinates of the pixels of the virtual imaging screen.
             x_steps = linspace( ...
                 floor(x_min)+0.5, ...
@@ -180,16 +158,12 @@ while doRetry
             rayDirections_in = normalizeVector3d(pixelCentroids-rayOrigin);
             rayDirections_in = gpuArray(rayDirections_in);
             
-            % Determine relevant faces.
-%             relevantFaceIndices = getrelevantfaces(vertices,faces,pixelCentroids_x,pixelCentroids_y);
-            relevantFaceIndices = 1:nFaces;
-            
+            % Determine relevant faces and rays.
+            [relevantFaceIndices,relevantRayIndices] = getrelevantfacesandrays( ...
+                vertices,faces, ...
+                pixelCentroids_x,pixelCentroids_y);
+
             nRelevantFaces = numel(relevantFaceIndices);
-            
-            % Determine relevant rays.
-            isRelevantRay = binaryObjectMaskTile(:);
-            relevantRayIndices = gpuArray(1:nRays);
-            relevantRayIndices = relevantRayIndices(isRelevantRay);
             nRelevantRays = numel(relevantRayIndices);
             
             % If there are no relevant rays or faces, then set the
@@ -216,149 +190,15 @@ while doRetry
                 P2(relevantFaceIndices,1)', P2(relevantFaceIndices,2)', P2(relevantFaceIndices,3)', ...
                 rayOrigin(:,1), rayOrigin(:,2), rayOrigin(:,3), ...
                 rayDirections_in(relevantRayIndices,1),rayDirections_in(relevantRayIndices,2),rayDirections_in(relevantRayIndices,3)); %#ok<*PFBNS>
-                       
-            %% Initialization
-            % Transpose ray tracing outputs.
-            intersectionDistancesArray = intersectionDistancesArray';
-            intersectionFlagsArray  = intersectionFlagsArray';
             
-            % Gather data from 
-            intersectionDistancesArray = gather(intersectionDistancesArray);
-            intersectionFlagsArray = gather(intersectionFlagsArray);
-            
-            %% Group rays. 
-            % Maybe don't use indices, but logical indexing?
-            
-            rayIndices = 1:nRays;
-            nHitsArray = sum(intersectionFlagsArray,1);
-            
-            % 0 hit rays
-            isHitRay_0 = nHitsArray == 0;
-            rayIndices_0Hits = rayIndices(isHitRay_0);
-                       
-            % uneven hit rays
-            isHitRay_unevenNumberOfHits = ~isEven(nHitsArray);
-            rayIndices_unevenNumberOfHits = ...
-                rayIndices(isHitRay_unevenNumberOfHits);
-
-            % 2 hit rays
-            isHitRay_2 = nHitsArray == 2;
-            rayIndices_2Hits = rayIndices(isHitRay_2);
-            
-            % 4+ even hit rays
-            isHitRay_even4plus = nHitsArray >= 4 & isEven(nHitsArray);
-            rayIndices_4HitsPlus = rayIndices(isHitRay_even4plus);
-            
-            %% Initialize transmissionDistanceMapTile.
-            transmissionDistances = zeros(nRays,1);
-            
-            %% Treat 0 hit rays.
-            % Could be ommited, because transmissionDistances was
-            % initialized with 0. However, this is more robust.
-            transmissionDistances(rayIndices_0Hits) = 0;
-            
-            %% Treat rays with an uneven number of hits.
-            % Rays with an uneven number of hits are assumed to never leave
-            % some geometry, because there is no outgoing intersection.
-            % Therefore, the transmission distance is infinite.
-            transmissionDistances(rayIndices_unevenNumberOfHits) = inf;
-            
-            %% Treat 2 hit rays.
-            % For rays with just 2 hits, the transmssion distance can be
-            % calculated based on the minimum and maximum transmission
-            % distance.
-            transmissionDistances(rayIndices_2Hits) = ...
-                max(intersectionDistancesArray(:,rayIndices_2Hits)) - ...
-                min(intersectionDistancesArray(:,rayIndices_2Hits));
-                
-            %% Treat even 4+ hit rays.            
-            for iRay = rayIndices_4HitsPlus
-                % Select data of current ray.  
-                intersectionDistances = intersectionDistancesArray(:,iRay);
-                intersectionFlags = intersectionFlagsArray(:,iRay); 
-                facesObjectIDs = mesh.facesObjectIDs;
-                
-                % Keep only intersectionDistances and facesObjectIDs of 
-                % intersected faces.
-                intersectionDistances = ...
-                    intersectionDistances(intersectionFlags);
-                facesObjectIDs = facesObjectIDs(intersectionFlags);
-                
-                % Sort intersectionDistances andfacesObjectIDs according to 
-                % intersectionDistances.
-                [intersectionDistances,orderedIndices] = ...
-                    sort(intersectionDistances);
-                facesObjectIDs = facesObjectIDs(orderedIndices);
-                
-                nIntersections = size(facesObjectIDs,1);
-                alreadyEncounteredFacesObjectIDs = NaN(nIntersections,1);
-                
-                relevantIntersectionDistances = NaN(nIntersections,1);
-                
-                % skip first iteration
-                isInsideObjectCounter = 1;
-                alreadyEncounteredFacesObjectIDs(1) = facesObjectIDs(1);
-                relevantIntersectionDistances(1) = intersectionDistances(1);
-                               
-                for iIntersection = 2:nIntersections
-                    facesObjectID = facesObjectIDs(iIntersection);
-                    
-                    wasIntersectedBefore = ...
-                        facesObjectID == alreadyEncounteredFacesObjectIDs;
-                                     
-                    if any(wasIntersectedBefore)
-                        % The ray is leaving an object.
-                        isInsideObjectCounter = isInsideObjectCounter-1;
-                        
-                        % If the ray is outside all objects now, then add
-                        % current intersectiondistance to the 
-                        % relevantIntersectionDistances.
-                        if isInsideObjectCounter == 0
-                            relevantIntersectionDistances(iIntersection) = ...
-                                intersectionDistances(iIntersection);
-                        end
-                        
-                        % Remove the facesObjectID from the list of 
-                        % alreadyEncounteredFacesObjectIDs, so that it will
-                        % be processed again, if the object is concave and
-                        % hit again by the current ray.
-                        alreadyEncounteredFacesObjectIDs(wasIntersectedBefore) = NaN;
-                        
-                    else
-                        % The ray is entering a new object.
-                        isInsideObjectCounter = isInsideObjectCounter+1;
-                        
-                        % Add the object to the
-                        % alreadyEncounteredFacesObjectIDs.
-                        alreadyEncounteredFacesObjectIDs(iIntersection) = ...
-                            facesObjectID;
-                        
-                        % If the ray is only inside a single object now, 
-                        % then add the current intersectiondistance to the 
-                        % relevantIntersectionDistances.
-                        if isInsideObjectCounter == 1
-                            relevantIntersectionDistances(iIntersection) = ...
-                                intersectionDistances(iIntersection);
-                        end
-                    end
-                end                       
-
-                % Remove NaNs from relevantIntersectionDistances.
-                relevantIntersectionDistances(isnan(relevantIntersectionDistances)) = [];
-                
-                % Calculate the transmissionDistance of the current ray.
-                objectTransmissionDistances = ...
-                    relevantIntersectionDistances - ...
-                    [0;relevantIntersectionDistances(1:end-1)];
-                
-                objectTransmissionDistances = ...
-                    objectTransmissionDistances(2:2:end);
-                
-                transmissionDistances(iRay) = sum(objectTransmissionDistances);
-            end
+            % Calculate transmissionDistanceArray
+            transmissionDistanceArray = calculatetransmissiondistances( ...
+                intersectionDistancesArray, ...
+                intersectionFlagsArray, ...
+                mesh.facesObjectIDs);
             
             % Reshape the data to get a thickness map.
-            transmissionDistanceMapTile = reshape(transmissionDistances,nPixels_y,nPixels_x);
+            transmissionDistanceMapTile = reshape(transmissionDistanceArray,nPixels_y,nPixels_x);
             
             % Save tile.
             transmissionDistanceMapTiles{iTile} = ...
