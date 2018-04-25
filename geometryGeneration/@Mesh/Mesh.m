@@ -26,8 +26,6 @@ classdef Mesh
         centerOfMass
         centroid
         
-        dimensions
-        
         vertexNormals
         faceNormals
         
@@ -130,10 +128,6 @@ classdef Mesh
         
         function boundingBox = get.boundingBox(obj)
             boundingBox = BoundingBox(obj.vertices);
-        end
-        
-        function dimensions = get.dimensions(obj)
-            dimensions = range(obj.vertices);
         end
     end
 end
