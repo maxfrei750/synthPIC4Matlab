@@ -1,4 +1,4 @@
-function hPatch = draw(obj,coloringMode)
+function hPatch = draw(obj,varargin)
 
 %% Validate inputs
 expectedColoringModes = {
@@ -18,7 +18,7 @@ p = inputParser;
 p.addRequired('obj',isValidObj);
 p.addOptional('coloringMode',defaultColoringMode,isValidColoringMode);
 
-p.parse(obj,coloringMode);
+p.parse(obj,varargin{:});
 
 coloringMode = p.Results.coloringMode;
 obj = p.Results.obj;
