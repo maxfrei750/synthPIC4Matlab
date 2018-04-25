@@ -31,9 +31,9 @@ classdef Mesh
         
         boundingBox
         
-        xData
-        yData
-        zData
+        XData
+        YData
+        ZData
     end
     
     methods
@@ -134,16 +134,16 @@ classdef Mesh
             boundingBox = BoundingBox(obj.vertices);
         end
         
-        function xData = get.xData(obj)
-            xData = obj.vertices(:,1);
+        function XData = get.XData(obj)
+            XData = obj.vertices(:,1);
         end
         
-        function yData = get.yData(obj)
-            yData = obj.vertices(:,2);
+        function YData = get.YData(obj)
+            YData = obj.vertices(:,2);
         end
         
-        function zData = get.zData(obj)
-            zData = obj.vertices(:,3);
+        function ZData = get.ZData(obj)
+            ZData = obj.vertices(:,3);
         end
     end
 end
