@@ -2,7 +2,9 @@ classdef BoundingBox < Mesh
     %BOUNDINGBOX Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties(Dependent = true)
+        dimensions
+        diagonalLength
     end
     
     methods
@@ -13,6 +15,15 @@ classdef BoundingBox < Mesh
             obj@Mesh(vertices,faces);
             
             obj.faces_quads = faces_quads;
+        end
+        
+        %% Getters
+        function dimensions = get.dimensions(obj)
+            dimensions = range(obj.vertices);
+        end
+        
+        function diagonalLength = get.diagonalLength(obj)
+            diagonalLength = sqrt(sum(obj.dimensions.^2));
         end
     end
 end
