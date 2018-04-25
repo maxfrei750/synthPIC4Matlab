@@ -12,7 +12,7 @@ classdef BoundingBox < Mesh
             
             obj@Mesh(vertices,triangles);
             
-            obj.faces = quads;
+            obj.faces_quads = quads;
         end
     end
 end
