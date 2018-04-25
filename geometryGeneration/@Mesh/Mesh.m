@@ -56,6 +56,9 @@ classdef Mesh
             %% Set facesObjectIds
             obj.facesObjectIDs = ones(obj.nFaces,1);
             
+            %% Set a base texture.
+            obj.texture = ones(obj.nVertices,3);
+            
         end
         
         %% Setter-methods
