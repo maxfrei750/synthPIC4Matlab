@@ -5,7 +5,7 @@ if nargin<2
 end
 
 %% Draw the geometry.
-hPatch = drawMesh(obj);
+hPatch = drawMesh(obj.vertices,obj.faces_quads);
 
 hPatch.FaceAlpha = 0.2;
 
