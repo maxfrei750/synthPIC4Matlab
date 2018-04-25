@@ -24,7 +24,7 @@ relevantRayIndices = relevantRayIndices(isRelevantRay);
 % Remove NaNs
 relevantFaceIndices_hit(isnan(relevantFaceIndices_hit)) = [];
 
-safetyTileOverlapFactor = 1; % number of tiles to overlap in each direction
+safetyTileOverlapFactor = 0.1; % number of tiles to overlap in each direction
 
 x_min = min(rayIncidentPoints_x);
 x_max = max(rayIncidentPoints_x);
@@ -46,17 +46,18 @@ P2 = vertices2D(faces(:,2),:);
 P3 = vertices2D(faces(:,3),:);
 
 isRelevantFace_insideTile = ...
-     (P1(:,1) >= x_min & P1(:,1) <= x_max & P1(:,2) >= y_min & P1(:,2) <= y_max) | ...
-     (P2(:,1) >= x_min & P2(:,1) <= x_max & P2(:,2) >= y_min & P2(:,2) <= y_max) | ...
-     (P3(:,1) >= x_min & P3(:,1) <= x_max & P3(:,2) >= y_min & P3(:,2) <= y_max);
+     ((P1(:,1) >= x_min) & (P1(:,1) <= x_max) & (P1(:,2) >= y_min) & (P1(:,2) <= y_max)) | ...
+     ((P2(:,1) >= x_min) & (P2(:,1) <= x_max) & (P2(:,2) >= y_min) & (P2(:,2) <= y_max)) | ...
+     ((P3(:,1) >= x_min) & (P3(:,1) <= x_max) & (P3(:,2) >= y_min) & (P3(:,2) <= y_max));
  
  relevantFaceIndices_insideTile = 1:nFaces;
  
  relevantFaceIndices_insideTile = ...
      relevantFaceIndices_insideTile(isRelevantFace_insideTile)';
  
- %% Only keep unique triangleIndices.
-relevantFaceIndices = unique([relevantFaceIndices_hit;relevantFaceIndices_insideTile]);
+%% Only keep unique triangleIndices.
+% relevantFaceIndices = unique([relevantFaceIndices_hit;relevantFaceIndices_insideTile]);
+relevantFaceIndices = relevantFaceIndices_insideTile;
  
 end
 
