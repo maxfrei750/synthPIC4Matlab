@@ -8,11 +8,11 @@ classdef BoundingBox < Mesh
     methods
         %% Constructor
         function obj = BoundingBox(vertices)
-            [vertices,triangles,quads] = bounding_box(vertices);
+            [vertices,faces,faces_quads] = bounding_box(vertices);
             
-            obj@Mesh(vertices,triangles);
+            obj@Mesh(vertices,faces);
             
-            obj.faces_quads = quads;
+            obj.faces_quads = faces_quads;
         end
     end
 end
