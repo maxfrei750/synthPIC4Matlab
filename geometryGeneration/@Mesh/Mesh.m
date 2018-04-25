@@ -30,6 +30,10 @@ classdef Mesh
         faceNormals
         
         boundingBox
+        
+        xData
+        yData
+        zData
     end
     
     methods
@@ -128,6 +132,18 @@ classdef Mesh
         
         function boundingBox = get.boundingBox(obj)
             boundingBox = BoundingBox(obj.vertices);
+        end
+        
+        function xData = get.xData(obj)
+            xData = obj.vertices(:,1);
+        end
+        
+        function yData = get.yData(obj)
+            yData = obj.vertices(:,2);
+        end
+        
+        function zData = get.zData(obj)
+            zData = obj.vertices(:,3);
         end
     end
 end
