@@ -8,23 +8,40 @@ classdef Mesh
     
     properties(SetAccess=private)
         vertices
-        faces
         nObjects = 0
         facesObjectIDs
     end
     
+    properties(SetAccess=protected)
+        faces
+    end
+    
     properties(Dependent = true)
         edges
+        
         nVertices
         nEdges
         nFaces
+        
         centerOfMass
+        centroid
+        
+        dimensions
+        
         vertexNormals
+        faceNormals
+        
+        boundingBox
     end
     
     methods
         %% Constructor
         function obj = Mesh(vertices,faces)
+            
+            if nargin == 0
+                obj = Mesh.empty;
+            end
+            
             %% Process vertices.
             % Validate vertices.
             validateattributes( ...
@@ -99,8 +116,24 @@ classdef Mesh
             centerOfMass = mean(randomPointsInVolume);
         end
         
+        function centroid = get.centroid(obj)           
+            centroid = mean(obj.vertices);
+        end
+        
         function vertexNormals = get.vertexNormals(obj)
             vertexNormals = meshVertexNormals(obj.vertices,obj.faces);
+        end
+        
+        function faceNormals = get.faceNormals(obj)
+            faceNormals = meshFaceNormals(obj.vertices,obj.faces);
+        end
+        
+        function boundingBox = get.boundingBox(obj)
+            boundingBox = BoundingBox(obj.vertices);
+        end
+        
+        function dimensions = get.dimensions(obj)
+            dimensions = range(obj.vertices);
         end
     end
 end
