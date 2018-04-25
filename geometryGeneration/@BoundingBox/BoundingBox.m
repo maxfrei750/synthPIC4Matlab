@@ -2,6 +2,10 @@ classdef BoundingBox < Mesh
     %BOUNDINGBOX Summary of this class goes here
     %   Detailed explanation goes here
     
+    properties
+        faces_quads
+    end
+    
     properties(Dependent = true)
         dimensions
         diagonalLength
