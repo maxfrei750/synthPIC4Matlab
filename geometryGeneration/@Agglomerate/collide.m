@@ -35,13 +35,13 @@ isValidRandomness = @(x) ...
 
 isValidPlot = @(x) any(validatestring(x,{'on','off','rotation'}));
 
-addRequired(p,'meshA',isValidAgglomerate);
-addRequired(p,'meshB',isValidAgglomerate);
+addRequired(p,'obj_A',isValidAgglomerate);
+addRequired(p,'obj_B',isValidAgglomerate);
 addParameter(p,'speed',defaultSpeed,isValidSpeed);
 addParameter(p,'randomness',defaultRandomness,isValidRandomness);
 addParameter(p,'plot','off',isValidPlot);
 
-parse(p,gather(obj_A),gather(obj_B),varargin{:});
+parse(p,obj_A,obj_B,varargin{:});
 
 speed = p.Results.speed;
 randomness = p.Results.randomness;
