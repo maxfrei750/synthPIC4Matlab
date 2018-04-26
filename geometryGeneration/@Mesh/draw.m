@@ -32,14 +32,14 @@ switch lower(coloringMode)
         hPatch.FaceVertexCData = obj.texture;
     case 'objectid'
         colormap('parula');
-        hPatch.FaceColor = 'flat';
         hPatch.FaceVertexCData = obj.facesObjectIDs;
+        hPatch.FaceColor = 'flat';
 end
 
 light
-set(hPatch,fphong)
 hPatch.LineStyle = 'none';
 daspect([1 1 1])
+material dull
 
 %% If no outputargument was requested, then clear hPatch.
 if nargout == 0
