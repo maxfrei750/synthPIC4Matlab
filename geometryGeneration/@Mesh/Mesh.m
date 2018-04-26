@@ -7,13 +7,13 @@ classdef Mesh
     end
     
     properties(SetAccess=private)
-        vertices
         nObjects = 0
         facesObjectIDs
     end
     
     properties(SetAccess=protected)
         faces
+        vertices
     end
     
     properties(Dependent = true)
