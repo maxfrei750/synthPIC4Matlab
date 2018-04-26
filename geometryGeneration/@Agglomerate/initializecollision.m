@@ -23,7 +23,7 @@ randomPoint_B_0 = getrandompointonboundingboxface( ...
 translationVector = randomPoint_A_0-randomPoint_B_0;
 
 % Translate mesh_B so that the random points are aligned.
-obj_B.mesh = obj_B.mesh.translate(translationVector);
+obj_B = obj_B.translate(translationVector);
 
 %% Calculate collision direction.
 collisionDirection = normalizeVector3d(obj_A.centroid-obj_B.centroid);
