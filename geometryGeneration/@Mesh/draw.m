@@ -29,18 +29,16 @@ hPatch = drawMesh(obj);
 
 switch lower(coloringMode)
     case 'texture'
-        set(hPatch, ...
-            fphong, ...
-            'FaceVertexCData',obj.texture);
+        hPatch.FaceVertexCData = obj.texture;
     case 'objectid'
         colormap('parula');
-        hPatch.LineStyle = 'none';
         hPatch.FaceColor = 'flat';
         hPatch.FaceVertexCData = obj.facesObjectIDs;
 end
 
-
-view(3)
+light
+set(hPatch,fphong)
+hPatch.LineStyle = 'none';
 daspect([1 1 1])
 
 %% If no outputargument was requested, then clear hPatch.
