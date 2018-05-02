@@ -1,4 +1,4 @@
-function obj_A = collide(obj_A,obj_B,varargin)
+function obj_C = collide(obj_A,obj_B,varargin)
 %COLLIDEMESHES Collides two meshes.
 %   Collides meshA with meshB.
 %
@@ -63,12 +63,25 @@ end
 
 % If meshA is empty then the collided mesh is just mesh_B.
 if isempty(obj_A)
-    obj_A = obj_B;
+    obj_C = obj_B;
     return
 end
 
+% Objects cannot be collided with themselves.
+if obj_A == obj_B
+    error('Objects cannot be collided with themselves.');
+end
+
+% if obj_A == obj_B
+%     obj_B = copy(obj_A);
+% end
+
 %% Intialize the collision.
-% Initialize the collision.
+
+% % Make copies of obj_A and obj_B.
+% obj_A = copy(obj_A);
+% obj_B = copy(obj_B);
+
 collisionDirection = initializecollision(obj_A,obj_B);
 
 % Set up a bounding box as periodic boundaries.
@@ -148,6 +161,6 @@ if doPlot
 end
 
 %% Make obj_B a child of obj_A.
-obj_A = obj_A.addchild(obj_B);
+obj_C = obj_A.addchild(obj_B);
 
 end
