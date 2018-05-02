@@ -36,7 +36,10 @@ switch lower(coloringMode)
         hPatch.FaceColor = 'flat';
 end
 
-light
+if ~islit
+     light
+end
+
 hPatch.LineStyle = 'none';
 daspect([1 1 1])
 material dull
