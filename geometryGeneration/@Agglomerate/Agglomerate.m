@@ -4,30 +4,23 @@ classdef Agglomerate < handle%matlab.mixin.Copyable
     
     properties
         mesh
-        %         collisionPartnerList = Agglomerate.empty;
         childList = Agglomerate.empty;
         nChildren = 1
-        %         nCollisionPartners = 0
+        bulkDensity = 1;
+        agglomerationMode
+        fractions
     end
     
     properties(Dependent=true)
         boundingBox
         completeMesh
         centroid
+        mass
+        volume
+        radiusOfGyration
+        centerOfMass
     end
-    
-%     methods(Access=protected)
-%         function copiedObject = copyElement(obj)
-%             copiedObject = copyElement@matlab.mixin.Copyable(obj);
-%             
-%             
-%             
-%             for iChild = 2:obj.nChildren
-%                 copiedObject.childList(iChild) = copy(obj.childList(iChild));
-%             end
-%         end
-%     end
-    
+
     methods
         function obj = Agglomerate()
             %AGGLOMERATE Construct an instance of this class
@@ -54,10 +47,26 @@ classdef Agglomerate < handle%matlab.mixin.Copyable
             centroid = obj.completeMesh.centroid;
         end
         
-        %         function nCollisionPartners = get.nCollisionPartners(obj)
-        %             nCollisionPartners = numel(obj.CollisionPartnerList);
-        %         end
+        function volume = get.volume(obj)           
+            volume = meshVolume( ...
+                obj.completeMesh.vertices, ...
+                [], ...
+                obj.completeMesh.faces);
+        end
         
+        function mass = get.mass(obj)           
+            volumes = [obj.childList.volume];
+            bulkDensities = [obj.childList.bulkDensity];
+            mass = sum(volumes.*bulkDensities);
+        end
+        
+        function centerOfMass = get.centerOfMass(obj)
+            centerOfMass = calculatecenterofmass(obj);
+        end
+        
+        function radiusOfGyration = get.radiusOfGyration(obj)
+            radiusOfGyration = calculateradiusofgyration(obj);
+        end       
         
     end
 end
