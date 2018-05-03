@@ -1,7 +1,7 @@
 function randomPoints = getrandompointsinmesh(mesh,nRandomPoints)
 %GETRANDOMPOINTSINMESH Generates random points inside a mesh.
 %   Source: https://de.mathworks.com/matlabcentral/answers/327990-generate-random-coordinates-inside-a-convex-polytope#answer_257270
-
+%   ONLY WORKS FOR CONVEX MESHES.
 
 %% Validate inputs.
 validateattributes(mesh,{'Mesh'},{'numel',1});
