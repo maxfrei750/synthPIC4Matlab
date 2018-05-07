@@ -56,8 +56,8 @@ isRelevantFace_insideTile = ...
      relevantFaceIndices_insideTile(isRelevantFace_insideTile)';
  
 %% Only keep unique triangleIndices.
-% relevantFaceIndices = unique([relevantFaceIndices_hit;relevantFaceIndices_insideTile]);
-relevantFaceIndices = relevantFaceIndices_insideTile;
+relevantFaceIndices = unique([relevantFaceIndices_hit;relevantFaceIndices_insideTile]);
+%relevantFaceIndices = relevantFaceIndices_insideTile;
  
 end
 
