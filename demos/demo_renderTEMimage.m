@@ -77,27 +77,3 @@ distortedTemImage = imnoise(distortedTemImage,'gaussian',0,0.0001);
 
 figure
 imshow(distortedTemImage);
-
-hold on
-
-return
-%% Plot tiles
-nTiles_x = floor(imageWidth/tileSize);
-nTiles_y = floor(imageHeight/tileSize);
-
-for iTile_x = 1:nTiles_x
-    plot(ones(2,1)*iTile_x*tileSize,[0 imageHeight],'w:','LineWidth',0.5);
-end
-
-for iTile_y = 1:nTiles_y
-    plot([0 imageWidth],ones(2,1)*iTile_y*tileSize,'w:','LineWidth',0.5);
-end
-
-for iTile_x = 1:nTiles_x
-    for iTile_y = 1:nTiles_y
-        tileString = sprintf('%d,%d',iTile_x,iTile_y);
-        text((iTile_x-0.5)*tileSize,(iTile_y-0.5)*tileSize,tileString,'HorizontalAlignment','center','FontSize',8,'color','w');
-    end
-end
-
-% imshow(shadowMap);
