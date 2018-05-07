@@ -12,11 +12,11 @@ nTiles_y = floor(imageHeight/tileSize);
 
 nTiles = nTiles_x*nTiles_y;
 
-for iTile_x = 1:nTiles_x-1
+for iTile_x = 1:nTiles_x
     plot(ones(2,1)*iTile_x*tileSize,[0 imageHeight],'w:','LineWidth',0.5);
 end
 
-for iTile_y = 1:nTiles_y-1
+for iTile_y = 1:nTiles_y
     plot([0 imageWidth],ones(2,1)*iTile_y*tileSize,'w:','LineWidth',0.5);
 end
 
