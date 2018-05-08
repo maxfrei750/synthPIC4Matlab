@@ -141,9 +141,7 @@ faces = [faces_cap_bottom; faces_rings; faces_cap_top];
 %% Assign outputs
 switch nargout
     case {0, 1}
-        mesh = Mesh;
-        mesh.faces = faces;
-        mesh.vertices = vertices;
+        mesh = Mesh(vertices,faces);
         varargout{1} = mesh;
     case 2
         varargout{1} = vertices;
