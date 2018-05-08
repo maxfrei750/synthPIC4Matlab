@@ -146,7 +146,7 @@ end
 % lengtharray. All other cases are already scaled.
 switch obj.type
     case [expectedTypes_1Length expectedTypes_3Lengths]
-        primitive.vertices = primitive.vertices*lengthArray;
+        primitive.vertices = primitive.vertices.*lengthArray;
 end
 
 end
