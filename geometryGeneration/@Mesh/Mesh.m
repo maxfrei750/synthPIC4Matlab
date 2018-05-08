@@ -54,6 +54,15 @@ classdef Mesh
             obj.vertices = vertices;
             
             %% Process faces.
+            
+            % If no faces were specified, then assume the convex hull.
+            if nargin == 1
+                faces = convhull( ...
+                    vertices(:,1), ...
+                    vertices(:,2), ...
+                    vertices(:,3));
+            end
+            
             % Triangulate faces if necessary.
             if size(faces,2) ~= 3
                 faces = triangulateFaces(faces);
