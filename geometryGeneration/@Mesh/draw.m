@@ -30,6 +30,7 @@ hPatch = drawMesh(obj);
 switch lower(coloringMode)
     case 'texture'
         hPatch.FaceVertexCData = obj.texture;
+        set(hPatch,fphong) 
     case 'objectid'
         colormap('parula');
         hPatch.FaceVertexCData = obj.facesObjectIDs;
