@@ -119,7 +119,7 @@ classdef Mesh
         end
         
         function centerOfMass = get.centerOfMass(obj)
-            nRandomPointsInVolume = 100000;
+            nRandomPointsInVolume = 10000;
             
             randomPointsInVolume = ...
                 getrandompointsinmesh(obj,nRandomPointsInVolume);
