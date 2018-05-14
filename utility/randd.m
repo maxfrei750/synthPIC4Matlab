@@ -3,11 +3,11 @@ function X = randd(minMaxArray,varargin)
 %limits passed via minMaxArray.
 %
 %   minMaxArray - Upper and lower limit, in which the random double-values
-%                 shall lie (Default: [-1 1]).
+%                 shall lie (Default: [0 1]).
 
 % Set default value for minMaxArray if it was not specified.
 if nargin == 0
-    minMaxArray = [-1 1];
+    minMaxArray = [0 1];
 end
 
 % Validate input.
