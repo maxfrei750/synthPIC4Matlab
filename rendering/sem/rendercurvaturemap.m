@@ -23,7 +23,7 @@ vertexCurvatures(end) = [];
 mesh.texture = repmat(vertexCurvatures,1,3);
 
 % Draw the current geometry.
-hPatch = mesh.draw;
+hPatch = draw_sem(mesh);
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
