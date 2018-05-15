@@ -1,9 +1,9 @@
-classdef Geometry
+classdef Geometry < handle
     %GEOMETRY Summary of this class goes here
     %   Detailed explanation goes here
     
     %% Properties
-    properties(Dependent = true, SetAccess = private)
+    properties(Dependent = true, SetAccess = protected)
         mesh
     end
     
@@ -13,7 +13,6 @@ classdef Geometry
         rotationAxisDirection = [1 0 0]
         rotationAngleDegree = 0
         smoothingLevel = 0
-        displacementLayers = []
         color = 1;
     end
     
@@ -26,6 +25,8 @@ classdef Geometry
         lengthArray = []
         angleArray = []
         nSidesBase = [];
+        
+        displacementLayers = Displacement.empty
     end
     
     %% Methods
@@ -73,7 +74,9 @@ classdef Geometry
             
             % Apply displacement.
             if ~isempty(obj.displacementLayers)
-                % ...
+                for displacementLayer = obj.displacementLayers
+                    meshObject = displacementLayer.applyto(meshObject);
+                end
             end
             
             % Set texture of the meshObject.
@@ -124,15 +127,6 @@ classdef Geometry
                 {'real','finite','nonnan','nonsparse','nonempty','scalar'});
             
             obj.rotationAngleDegree = value;
-        end
-        
-        function obj = set.displacementLayers(obj,value)
-            validateattributes( ...
-                value, ...
-                {'DisplacementLayer'}, ...
-                {'vector'});
-            
-            obj.displacementLayers = value;
         end
         
         function obj = set.color(obj,value)
