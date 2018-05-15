@@ -18,6 +18,7 @@ geometry = Geometry(obj.type,lengthArray,varargin{:});
 geometry.smoothingLevel = obj.smoothingLevel;
 geometry.subdivisionLevel = obj.subdivisionLevel;
 geometry.color = obj.color;
+geometry.displacementLayers = obj.displacementLayers;
 
 % Rotate geometry randomly.
 geometry.rotationAxisDirection = randd([0 1],1,3);
