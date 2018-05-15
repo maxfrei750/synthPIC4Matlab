@@ -41,8 +41,8 @@ if ~islit
      light
 end
 
-hPatch.LineStyle = 'none';
 daspect([1 1 1])
+view(3)
 material dull
 
 %% If no outputargument was requested, then clear hPatch.
