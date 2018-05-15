@@ -15,7 +15,7 @@ hFigure.Color = baseColor;
 
 % Draw the current geometry.
 mesh.texture = ones(mesh.nVertices,3);
-hPatch = mesh.draw;
+hPatch = draw_sem(mesh);
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
