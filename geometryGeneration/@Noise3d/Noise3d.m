@@ -8,6 +8,7 @@ classdef Noise3d
         scale = [1 1 1]
         lowerClipping = -inf
         upperClipping = inf
+        randomSeed = 1
     end
     
     methods
@@ -56,6 +57,16 @@ classdef Noise3d
             % Apply scale.
             points = points./obj.scale;
             
+            % Store current random seed.
+            previousRandomSeed = rng;
+            
+            % Apply new randomSeed.
+            rng(obj.randomSeed);
+            
+            % Translate points randomly to achieve a randomization of the 
+            % simplex noise.
+            points = points+rand*10000;
+            
             switch obj.type
                 case 'uniform'
                     amplitudes = randd([-1 1],nPoints,1);
@@ -76,6 +87,9 @@ classdef Noise3d
             
             % Apply clipping.
             amplitudes = clip(amplitudes,obj.lowerClipping,obj.upperClipping);
+            
+            % Restore random seed.
+            rng(previousRandomSeed);
         end
     end
 end
