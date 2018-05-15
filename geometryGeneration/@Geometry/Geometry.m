@@ -14,6 +14,7 @@ classdef Geometry < handle
         rotationAngleDegree = 0
         smoothingLevel = 0
         color = 1;
+        displacementLayers = Displacement.empty
     end
     
     properties(Access = private)
@@ -25,8 +26,6 @@ classdef Geometry < handle
         lengthArray = []
         angleArray = []
         nSidesBase = [];
-        
-        displacementLayers = Displacement.empty
     end
     
     %% Methods
