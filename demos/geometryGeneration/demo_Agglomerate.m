@@ -6,16 +6,16 @@ rng(1);
 d_g = 10;
 s_g = 1.2;
 
-nPrimaryParticles = 3;
+nPrimaryParticles = 10;
 
 agglomerationMode = 'BCCA';
 
-radiusDistribution = makedist( ...
+diameterDistribution = makedist( ...
     'lognormal', ...
     'mu',log(d_g), ...
     'sigma',log(s_g));
 
-fraction = Fraction('sphere',radiusDistribution);
+fraction = Fraction('sphere',diameterDistribution);
 
 fraction.subdivisionLevel = 1;
 
