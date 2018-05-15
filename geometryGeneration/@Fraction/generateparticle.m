@@ -14,11 +14,16 @@ if ~isempty(obj.nSidesBase)
     varargin{end+1} = obj.nSidesBase;
 end
 
+% Create geometry and copy properties.
 geometry = Geometry(obj.type,lengthArray,varargin{:});
 geometry.smoothingLevel = obj.smoothingLevel;
 geometry.subdivisionLevel = obj.subdivisionLevel;
 geometry.color = obj.color;
+
 geometry.displacementLayers = obj.displacementLayers;
+
+% Randomize displacementLayers.
+geometry.displacementLayers(:).randomSeed = randi([1 1000]);
 
 % Rotate geometry randomly.
 geometry.rotationAxisDirection = randd([0 1],1,3);
