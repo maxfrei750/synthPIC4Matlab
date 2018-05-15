@@ -15,11 +15,9 @@ geometry.draw;
 
 %% Create and add the first displacement layer:
 % a very large displacement to break up the spherical shape
-displacement1 = Displacement('simplex'); % Simplex noise is continuous
-displacement1.strength = 20;
-displacement1.scale = 200;
-
-geometry.adddisplacementlayer(displacement1);
+geometry.displacementLayers(1) = Displacement('simplex'); % Simplex noise is continuous
+geometry.displacementLayers(1).strength = 20;
+geometry.displacementLayers(1).scale = 200;
 
 % Show result.
 figure
@@ -27,14 +25,12 @@ geometry.draw;
 
 %% Create and add the second displacement layer:
 % a smaller noise with plateaus
-displacement2 = Displacement('simplex'); % Simplex noise is continuous
-displacement2.strength = 10;
-displacement2.scale = 50;
+geometry.displacementLayers(2) = Displacement('simplex'); % Simplex noise is continuous
+geometry.displacementLayers(2).strength = 10;
+geometry.displacementLayers(2).scale = 50;
 
-displacement2.lowerClipping = -3; % the clipping creates the plateaus.
-displacement2.upperClipping = 3;
-
-geometry.adddisplacementlayer(displacement2);
+geometry.displacementLayers(2).lowerClipping = -3; % the clipping creates the plateaus.
+geometry.displacementLayers(2).upperClipping = 3;
 
 % Show result.
 figure
@@ -42,11 +38,9 @@ geometry.draw;
 
 %% Create and add the third displacement layer:
 % a very small noise for a rough surfacetexture.
-displacement3 = Displacement('gaussian');
-displacement3.strength = 1;
-displacement3.scale = 10;
-
-geometry.adddisplacementlayer(displacement3);
+geometry.displacementLayers(3) = Displacement('gaussian');
+geometry.displacementLayers(3).strength = 1;
+geometry.displacementLayers(3).scale = 10;
 
 % Show result.
 figure
