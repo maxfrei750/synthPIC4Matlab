@@ -14,7 +14,7 @@ classdef Fraction < handle
         
         color = 1
         
-        displacement
+        displacementLayers
         
         proportion = 1
         name
