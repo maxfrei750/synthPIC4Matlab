@@ -6,8 +6,8 @@ classdef Noise3d
         type
         strength = 1
         scale = [1 1 1]
-%         lowerClipping
-%         upperClipping
+        lowerClipping = -inf
+        upperClipping = inf
     end
     
     methods
@@ -53,11 +53,12 @@ classdef Noise3d
             
             nPoints = size(points,1);
             
+            % Apply scale.
             points = points./obj.scale;
             
             switch obj.type
                 case 'uniform'
-                    amplitudes = rand(nPoints,1);
+                    amplitudes = randd([-1 1],nPoints,1);
                 case 'gaussian'
                     amplitudes = randn(nPoints,1);
                 case 'simplex'
@@ -70,7 +71,11 @@ classdef Noise3d
                     end         
             end
             
+            % Apply amplitude.
             amplitudes = amplitudes*obj.strength;
+            
+            % Apply clipping.
+            amplitudes = clip(amplitudes,obj.lowerClipping,obj.upperClipping);
         end
     end
 end
