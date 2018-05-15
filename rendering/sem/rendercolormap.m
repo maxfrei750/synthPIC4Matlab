@@ -12,7 +12,7 @@ hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
 % Draw the current geometry.
-hPatch = drawforsem(mesh);
+hPatch = draw_sem(mesh);
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
