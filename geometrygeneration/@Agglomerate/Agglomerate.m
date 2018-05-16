@@ -4,15 +4,17 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
     
     properties
         mesh
-        childList = Agglomerate.empty
-        nChildren = 1
         bulkDensity = 1
-        fractions
-
+        fractions = Fraction.empty
         agglomerationMode
         agglomerationSpeed
         
         randomSeed
+    end
+    
+    properties(SetAccess = private)
+        childList = Agglomerate.empty
+        nChildren = 1
     end
     
     properties(Dependent = true)
