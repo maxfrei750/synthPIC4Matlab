@@ -7,8 +7,9 @@ function [randomPoints,weights] = getrandompointsinvolume(obj)
 volumes = [obj.childList.volume];
 volume_total = sum(volumes);
 
-% Draw one random point per unit volume.
-nRandomPoints_total = round(volume_total);
+% Draw one random point per 5x5x5 volume.
+nRandomPoints_total = round(volume_total/125);
+
 relativeVolumes = volumes/volume_total;
 
 nRandomPointsArray = round(relativeVolumes*nRandomPoints_total);
