@@ -1,4 +1,4 @@
-function shadowMap = rendershadowmap_raytracing(mesh,width,height,varargin)
+function shadowMap = rendershadowmap(mesh,width,height,varargin)
 %RENDERSHADOWMAP Generates a shadowmap of the provided geometry.
 %   Needs a GPU to be run.
 %   
