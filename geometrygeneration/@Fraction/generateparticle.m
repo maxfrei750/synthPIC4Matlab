@@ -22,8 +22,10 @@ geometry.color = obj.color;
 
 geometry.displacementLayers = obj.displacementLayers;
 
-% Randomize displacementLayers.
-geometry.displacementLayers(:).randomSeed = randi([1 1000]);
+% Randomize displacementLayers, if there are any.
+if ~isempty(obj.displacementLayers)
+    geometry.displacementLayers(:).randomSeed = randi([1 1000]);
+end
 
 % Rotate geometry randomly.
 geometry.rotationAxisDirection = randd([0 1],1,3);
