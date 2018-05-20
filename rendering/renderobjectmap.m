@@ -1,5 +1,5 @@
-function [objectMask,binaryObjectMask] = renderobjectmask(mesh,width,height)
-%RENDERDIFFUSEMAP Summary of this function goes here
+function [objectMap,binaryObjectMap] = renderobjectmap(mesh,width,height)
+%RENDEROBJECTMAP Summary of this function goes here
 %   Detailed explanation goes here
 
 
@@ -22,28 +22,28 @@ hPatch = mesh.draw;
 hPatch.EdgeColor = 'none';
 
 % Convert figure to image.
-objectMask = figure2image(hFigure,width,height);
+objectMap = figure2image(hFigure,width,height);
 
 % Close figure.
 close(hFigure);
 
 % Remove redundant color channels.
-objectMask = objectMask(:,:,1);
-objectMask = im2double(objectMask);
+objectMap = objectMap(:,:,1);
+objectMap = im2double(objectMap);
 
 % Flip diffuse map.
-objectMask = flipud(objectMask);
+objectMap = flipud(objectMap);
 
 % Invert objectmask.
-objectMask = imcomplement(objectMask);
+objectMap = imcomplement(objectMap);
 
 %% Push data to gpu, if one is available.
 if isgpuavailable
-    objectMask = gpuArray(objectMask);
+    objectMap = gpuArray(objectMap);
 end
 
 if nargout==2
-     binaryObjectMask = objectMask>0;
+     binaryObjectMap = objectMap>0;
 end
 
 end
