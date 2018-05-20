@@ -1,9 +1,13 @@
-function diffuseMap = renderdiffusemap(mesh,width,height)
+function diffuseMap = renderdiffusemap(mesh,width,height,detectorPosition)
 %RENDERDIFFUSEMAP Summary of this function goes here
 %   Detailed explanation goes here
 
 %% Set parameters.
-detectorPosition = [-width height/2 3000];
+
+% Set default value for detectorPosition.
+if nargin<4
+    detectorPosition = [width/2 height/2 10e4];
+end
 
 baseColor = ones(1,3);
 
