@@ -1,5 +1,5 @@
-function shadowMap = rendershadowmap(objectMask,shadowOffset_max)
-%RENDERSHADOWMAP Renders a shadowmap resulting from charge effects.
+function shadowMap = renderscanningshadowmap(objectMask,shadowOffset_max)
+%RENDERSCANNINGSHADOWMAP Renders a shadowmap resulting from charge effects.
 
 %% Validate inputs.
 validateattributes( ...
