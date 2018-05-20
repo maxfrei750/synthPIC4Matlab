@@ -1,4 +1,4 @@
-function transmissionDistanceArray = calculatetransmissiondistances(intersectionDistancesArray,intersectionFlagsArray,facesObjectIDs)
+function transmissionLengths = calculatetransmissionlengths(intersectionDistancesArray,intersectionFlagsArray,facesObjectIDs)
 %CALCULATETRANSMISSIONDISTANCES Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -37,24 +37,24 @@ isHitRay_even4plus = nHitsArray >= 4 & isEven(nHitsArray);
 rayIndices_4HitsPlus = rayIndices(isHitRay_even4plus);
 
 %% Initialize transmissionDistanceMapTile.
-transmissionDistanceArray = zeros(nRays,1);
+transmissionLengths = zeros(nRays,1);
 
 %% Treat 0 hit rays.
 % Could be ommited, because transmissionDistances was
 % initialized with 0. However, this is more robust.
-transmissionDistanceArray(rayIndices_0Hits) = 0;
+transmissionLengths(rayIndices_0Hits) = 0;
 
 %% Treat rays with an uneven number of hits.
 % Rays with an uneven number of hits are assumed to never leave
 % some geometry, because there is no outgoing intersection.
 % Therefore, the transmission distance is infinite.
-transmissionDistanceArray(rayIndices_unevenNumberOfHits) = inf;
+transmissionLengths(rayIndices_unevenNumberOfHits) = inf;
 
 %% Treat 2 hit rays.
 % For rays with just 2 hits, the transmssion distance can be
 % calculated based on the minimum and maximum transmission
 % distance.
-transmissionDistanceArray(rayIndices_2Hits) = ...
+transmissionLengths(rayIndices_2Hits) = ...
     max(intersectionDistancesArray(:,rayIndices_2Hits)) - ...
     min(intersectionDistancesArray(:,rayIndices_2Hits));
 
@@ -140,7 +140,7 @@ for iRay = rayIndices_4HitsPlus
     objectTransmissionDistances = ...
         objectTransmissionDistances(2:2:end);
     
-    transmissionDistanceArray(iRay) = sum(objectTransmissionDistances);
+    transmissionLengths(iRay) = sum(objectTransmissionDistances);
 end
 
 end
