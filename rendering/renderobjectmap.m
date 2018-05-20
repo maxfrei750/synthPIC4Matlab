@@ -1,4 +1,4 @@
-function [objectMap,binaryObjectMap] = renderobjectmap(mesh,width,height)
+function objectMap = renderobjectmap(mesh,width,height)
 %RENDEROBJECTMAP Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -41,10 +41,5 @@ objectMap = imcomplement(objectMap);
 if isgpuavailable
     objectMap = gpuArray(objectMap);
 end
-
-if nargout==2
-     binaryObjectMap = objectMap>0;
-end
-
 end
 
