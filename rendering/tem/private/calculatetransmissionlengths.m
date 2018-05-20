@@ -1,5 +1,5 @@
 function transmissionLengths = calculatetransmissionlengths(intersectionDistancesArray,intersectionFlagsArray,facesObjectIDs)
-%CALCULATETRANSMISSIONDISTANCES Summary of this function goes here
+%CALCULATETRANSMISSIONLENGTHS Summary of this function goes here
 %   Detailed explanation goes here
 
 nRays = size(intersectionDistancesArray,1);
@@ -133,14 +133,14 @@ for iRay = rayIndices_4HitsPlus
     relevantIntersectionDistances(isnan(relevantIntersectionDistances)) = [];
     
     % Calculate the transmissionDistance of the current ray.
-    objectTransmissionDistances = ...
+    objectTransmissionLengths = ...
         relevantIntersectionDistances - ...
         [0;relevantIntersectionDistances(1:end-1)];
     
-    objectTransmissionDistances = ...
-        objectTransmissionDistances(2:2:end);
+    objectTransmissionLengths = ...
+        objectTransmissionLengths(2:2:end);
     
-    transmissionLengths(iRay) = sum(objectTransmissionDistances);
+    transmissionLengths(iRay) = sum(objectTransmissionLengths);
 end
 
 end
