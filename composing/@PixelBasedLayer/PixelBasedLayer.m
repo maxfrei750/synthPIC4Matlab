@@ -27,10 +27,11 @@ classdef PixelBasedLayer < handle
         function set.blendMode(obj,value)
             expectedBlendModes = {
                 'additive'
-                'multiplicative'
                 'add'
+                'multiplicative'               
                 'multiply'
-                'multi'
+                'substractive'
+                'substract'
                 };
             
             validatestring(value,expectedBlendModes);
