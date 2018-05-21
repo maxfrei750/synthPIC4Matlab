@@ -1,10 +1,6 @@
 classdef ImageLayer < PixelBasedLayer
     %IMAGELAYER Summary of this class goes here
-    %   Detailed explanation goes here   
-    properties(Dependent = true)
-        pixelData
-    end
-    
+    %   Detailed explanation goes here       
     properties(Hidden = true)
         originalPixelData
     end
@@ -26,16 +22,6 @@ classdef ImageLayer < PixelBasedLayer
             
             % Assign originalPixelData property.
             obj.originalPixelData = image;
-        end
-        
-        %% Getters
-        function pixelData = get.pixelData(obj)   
-            
-            % Adjust brightness of the image.
-            pixelData = obj.originalPixelData-0.5+obj.brightness;
-            
-            % Clip image.
-            pixelData = clip(pixelData,[0 1]);
         end
     end
 end

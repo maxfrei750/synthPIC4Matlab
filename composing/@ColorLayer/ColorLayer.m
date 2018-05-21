@@ -5,17 +5,8 @@ classdef ColorLayer < PixelBasedLayer
     properties
         color = 1
     end
-    
-    properties(Dependent = true)
-        pixelData
-    end
-    
+   
     methods
-        %% Getters
-        function pixelData = get.pixelData(obj)
-            pixelData = ones(obj.parent.size)*obj.color;
-        end
-        
         %% Setters
         function obj = set.color(obj,value)
             % Validate input.
@@ -26,8 +17,7 @@ classdef ColorLayer < PixelBasedLayer
             
             obj.color = value;
         end
-        
-        
+         
     end
 end
 

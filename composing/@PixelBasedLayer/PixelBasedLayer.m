@@ -4,28 +4,24 @@ classdef PixelBasedLayer < handle
     
     properties
         parent
-        
         blendMode = 'multiplicative'
-        
-        brightness = 0.5
-        
         mask = []
         
+        brightness = 0.5
+        strength = 1
         blurStrength = 0
-        
         inverted = false
-    end
-    
-    properties(Dependent = true, Abstract=true)
-        pixelData
+        clipping = [-inf inf]
     end
     
     properties(Dependent = true)
+        pixelData
         size
     end
     
     methods(Access = protected)
         pixelData = postprocesspixeldata(obj,pixelData)
+%         pixelData = computepixeldata(obj)
     end
     
     methods
@@ -65,6 +61,16 @@ classdef PixelBasedLayer < handle
             obj.blurStrength = value;
         end
         
+        function set.clipping(obj,value)
+            % Validate input.
+            validateattributes( ...
+                value, ...
+                {'numeric'}, ...
+                {'real','finite','nonnan','nonsparse','nonempty','vector','increasing'});
+            
+            obj.clipping = value;
+        end
+        
         %% Getters
         function mask = get.mask(obj)
             if isempty(obj.mask)
@@ -76,6 +82,14 @@ classdef PixelBasedLayer < handle
         
         function size = get.size(obj)
             size = obj.parent.size;
+        end
+        
+        function pixelData = get.pixelData(obj)    
+            % Compute pixelData.
+            pixelData = computepixeldata(obj);
+            
+            % Postprocess pixelData (clipping, inversion, blur, etc.).
+            pixelData = postprocesspixeldata(obj,pixelData);
         end
     end
 end
