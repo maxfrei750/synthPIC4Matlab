@@ -24,6 +24,7 @@ classdef RenderScene < handle
         objectMap
         binaryObjectMap
         transmissionLengthMap
+        % shadowMap % Yet to be implemented.
     end
     
     
