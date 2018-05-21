@@ -10,34 +10,31 @@ assert( ...
     maskSize(1), maskSize(2), ...
     obj.size(1), obj.size(2));
 
-switch obj.blendMode
-    case {'additive', 'add'}
-        % If there is no pixelData to process yet, then create neutral
-        % pixelData.
-        if isempty(obj.parent.pixelData)
+% If there is no pixelData to process yet, then create neutral
+% pixelData, i.e. zeros for additive and ones for multiplicative and
+% substractive.
+if isempty(obj.parent.pixelData)
+    switch obj.blendMode
+        case {'additive', 'add'}
             obj.parent.pixelData = zeros(obj.size);
-        end
-        
+        case {'substractive', 'substract', 'multiplicative', 'multiply'}
+            obj.parent.pixelData = ones(obj.size);
+    end
+    
+    % Use GPU, if available.
+    obj.parent.pixelData = gpuArray(obj.parent.pixelData);
+end
+
+switch obj.blendMode
+    case {'additive', 'add'}       
         obj.parent.pixelData(obj.mask) = ...
             obj.parent.pixelData(obj.mask) + ...
             obj.pixelData(obj.mask);
-    case {'substractive', 'substract'}
-        % If there is no pixelData to process yet, then create neutral
-        % pixelData.
-        if isempty(obj.parent.pixelData)
-            obj.parent.pixelData = ones(obj.size);
-        end
-        
+    case {'substractive', 'substract'}       
         obj.parent.pixelData(obj.mask) = ...
             obj.parent.pixelData(obj.mask) - ...
             obj.pixelData(obj.mask);
-    case {'multiplicative', 'multiply'}
-        % If there is no pixelData to process yet, then create neutral
-        % pixelData.
-        if isempty(obj.parent.pixelData)
-            obj.parent.pixelData = ones(obj.size);
-        end
-        
+    case {'multiplicative', 'multiply'}       
         obj.parent.pixelData(obj.mask) = ...
             obj.parent.pixelData(obj.mask) .* ...
             obj.pixelData(obj.mask);
