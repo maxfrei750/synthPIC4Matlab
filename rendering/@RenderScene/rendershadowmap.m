@@ -1,93 +1,20 @@
-function shadowMap = rendershadowmap(mesh,width,height,varargin)
+function shadowMap = rendershadowmap(obj)
 %RENDERSHADOWMAP Generates a shadowmap of the provided geometry.
 %   Needs a GPU to be run.
-%   
-%   Inputs:
-%   =======
-%
-%   mesh - Mesh-object with at least the fields 'vertices' and 'faces'.
-%
-%   width - Width of the rendered shadowmap.
-%
-%   height - Height of the rendered shadowmap.
-%
-%   
-%   Optional name-value-pairs:
-%   ==========================
-%
-%   'tileSize' - Sidelength of the square tiles, which are rendered.
-%                Affects the memory consumption and the render speed.
-%                Default: 100
-%
-%   'relativeResolution' - Sets the rendering resolution.
-%                          Example: for 'relativeResolution', 0.5 only 
-%                          every second pixel of the shadowmap is
-%                          calculated and the remaining pixels are
-%                          interpolatet.
-%                          Default: 0.5
-%
-%   'detectorPosition' - Position of the detector in space. Affects
-%                        position of the shadows.
-%                        Default: [-1000 -500 3000]
-%                        
-%
-%   'transmissionCoefficient' - Transmissioncoefficient of the material.
-%                               Default: 0.005
-%
+ 
+% If map was already rendered, then return the already rendered map.
+if ~isempty(obj.shadowMap)
+    shadowMap = obj.shadowMap;
+    return
+end
 
-%% Parse and validate inputs.
-
-% Validation functions.
-
-isValidMesh = @(x) validateattributes( ...
-    x, ...
-    {'Mesh'}, ...
-    {'numel',1});
-
-isValidScalarPixelInput = @(x) validateattributes( ...
-    x, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','positive','scalar','integer'});
-
-isValidDetectorPosition = @(x) validateattributes( ...
-    x, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','row','numel',3});
-
-isValidTransmissionCoefficient = @(x) validateattributes( ...
-    x, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','positive','scalar'});
-
-isValidRelativeResolution = @(x) validateattributes( ...
-    x, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','scalar','>=',0,'<=',1});
-
-% Default values
-defaultDetectorPosition = [-1000 -500 3000];
-defaultTileSize = 100;
-defaultTransmissionCoefficient = 0.005;
-defaultRelativeResolution = 0.5;
-
-% Setup input parser
-
-p = inputParser;
-
-p.addRequired('mesh',isValidMesh);
-p.addRequired('width',isValidScalarPixelInput);
-p.addRequired('height',isValidScalarPixelInput);
-p.addParameter('tileSize',defaultTileSize,isValidScalarPixelInput);
-p.addParameter('detectorPosition',defaultDetectorPosition,isValidDetectorPosition);
-p.addParameter('transmissionCoefficient',defaultTransmissionCoefficient,isValidTransmissionCoefficient);
-p.addParameter('relativeResolution',defaultRelativeResolution,isValidRelativeResolution);
-
-p.parse(mesh,width,height,varargin{:});
-
-tileSize = p.Results.tileSize;
-detectorPosition = p.Results.detectorPosition;
-transmissionCoefficient = p.Results.transmissionCoefficient;
-relativeResolution = p.Results.relativeResolution;
+% Extract variables from object.
+height = obj.imageSize(1);
+width = obj.imageSize(2);
+tileSize = obj.tileSize;
+relativeResolution = obj.relativeResolution;
+detectorPosition = obj.detectorPosition;
+mesh = obj.mesh;
 
 %% Rendering
 % Extract vertices and faces from mesh.
@@ -111,7 +38,7 @@ nTiles = nTiles_x*nTiles_y;
 
 transmissionDistanceMapTiles = cell(nTiles_x,nTiles_y);
 
-parfor iTile = 1:nTiles
+for iTile = 1:nTiles
     
     % Calculate current tile indices in x- andy y- direction.
     iTile_x = mod(iTile-1,nTiles_x)+1;
@@ -231,17 +158,12 @@ transmissionDistanceMap = vertcat(transmissionDistanceMapSlices{:});
 
 % Calculate the relative transmission intensity.
 % Source: Hornbogen, Skrotzki: Mikro- und Nanoskopie der Werkstoffe
-shadowMap = exp(-transmissionCoefficient*transmissionDistanceMap);
-
-lateralDetectorAngle = atand(-detectorPosition(2)/detectorPosition(1));
-
-% shadowMap = imcomplement(imdilate(imcomplement(shadowMap),strel('line',3,lateralDetectorAngle)));
-% 
-% shadowMap = imgaussfilt(shadowMap,1);
+shadowMap = exp(-0.01*transmissionDistanceMap);
 
 shadowMap = imresize(shadowMap,[height width]);
 
-
+%% Assign the associated ...Map-attribute of the object.
+obj.shadowMap = shadowMap;
 
 end
 
