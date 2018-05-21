@@ -24,10 +24,7 @@ hAxis.Color = [1 1 1];
 mesh.texture = zeros(mesh.nVertices,3);
 
 % Draw the current geometry.
-hPatch = mesh.draw;
-
-% Set patch properties.
-hPatch.EdgeColor = 'none';
+mesh.draw;
 
 % Convert figure to image.
 objectMap = figure2image(hFigure,obj.imageSize);
