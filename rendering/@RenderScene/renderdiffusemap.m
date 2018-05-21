@@ -8,7 +8,7 @@ if ~isempty(obj.diffuseMap)
     return
 end
 
-mesh = copy(obj.mesh);
+mesh = obj.mesh;
 
 %% Set parameters.
 baseColor = ones(1,3);
