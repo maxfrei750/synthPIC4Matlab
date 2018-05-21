@@ -62,7 +62,7 @@ for iAxis = 1:nAxes
 end
 
 % Generate image.
-image = print('-RGBImage',['-r' num2str(resolutionDPI)]);
+image = print(hFigure,'-RGBImage',['-r' num2str(resolutionDPI)]);
 
 % Crop buffer to remove edge effects.
 image = ...
