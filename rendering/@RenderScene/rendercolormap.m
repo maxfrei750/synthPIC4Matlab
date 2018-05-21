@@ -18,12 +18,10 @@ hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
 % Draw the current geometry.
-hPatch = draw_sem(obj.mesh);
-
-% Set patch properties.
-hPatch.EdgeColor = 'none';
+draw_sem(obj.mesh);
 
 % Convert figure to image.
+
 colorMap = figure2image(hFigure,obj.imageSize);
 
 % Close figure.
