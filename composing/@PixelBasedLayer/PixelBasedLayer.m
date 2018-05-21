@@ -21,7 +21,6 @@ classdef PixelBasedLayer < handle
     
     methods(Access = protected)
         pixelData = postprocesspixeldata(obj,pixelData)
-%         pixelData = computepixeldata(obj)
     end
     
     methods
@@ -32,8 +31,8 @@ classdef PixelBasedLayer < handle
                 'add'
                 'multiplicative'               
                 'multiply'
-                'substractive'
-                'substract'
+                'subtractive'
+                'subtract'
                 };
             
             validatestring(value,expectedBlendModes);
