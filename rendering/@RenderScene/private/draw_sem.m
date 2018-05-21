@@ -7,10 +7,8 @@ assert(isa(obj,'Mesh'),'Expected input to be an object of class Mesh.');
 %% Draw the geometry.
 hPatch = drawMesh(obj);
 
-
 hPatch.FaceVertexCData = obj.texture;
 set(hPatch,fphong)
-
 
 hPatch.LineStyle = 'none';
 daspect([1 1 1])
