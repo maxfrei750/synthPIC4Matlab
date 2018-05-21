@@ -12,6 +12,8 @@ classdef PixelBasedLayer < handle
         mask = []
         
         blurStrength = 0
+        
+        inverted = false
     end
     
     properties(Dependent = true, Abstract=true)
