@@ -7,6 +7,9 @@ if ~isempty(obj.transmissionLengthMap)
     return
 end
 
+% Check if a suitable gpu is available.
+assert(isgpuavailable,'This function needs a suitable GPU to run.');
+
 % Extract variables from object.
 height = obj.imageSize(1);
 width = obj.imageSize(2);
@@ -139,8 +142,7 @@ while doRetry
             transmissionLengthMapTile = reshape(transmissionLengths,nPixels_y,nPixels_x);
             
             % Save tile.
-            transmissionLengthMapTiles{iTile} = ...
-                gather(transmissionLengthMapTile);
+            transmissionLengthMapTiles{iTile} = transmissionLengthMapTile;
         end
         
         doRetry = false;
@@ -177,6 +179,9 @@ transmissionLengthMap = vertcat(transmissionLengthMapSlices{:});
 
 % Resize image, in case that relativeResolution<1.
 transmissionLengthMap = imresize(transmissionLengthMap,[height width]);
+
+% Push data to the gpu again.
+transmissionLengthMap = gpuArray(transmissionLengthMap);
 
 %% Assign the associated ...Map-attribute of the object.
 obj.transmissionLengthMap = transmissionLengthMap;
