@@ -1,14 +1,16 @@
-function diffuseMap = renderdiffusemap(mesh,width,height,detectorPosition)
+function diffuseMap = renderdiffusemap(obj)
 %RENDERDIFFUSEMAP Summary of this function goes here
 %   Detailed explanation goes here
 
-%% Set parameters.
-
-% Set default value for detectorPosition.
-if nargin<4
-    detectorPosition = [width/2 height/2 10e4];
+% If map was already rendered, then return the already rendered map.
+if ~isempty(obj.diffuseMap)
+    diffuseMap = obj.diffuseMap;
+    return
 end
 
+mesh = copy(obj.mesh);
+
+%% Set parameters.
 baseColor = ones(1,3);
 
 %% Render the geometry.
@@ -27,10 +29,10 @@ hPatch.EdgeColor = 'none';
 % Set light properties.
 material dull
 hLight = light;
-hLight.Position = detectorPosition;
+hLight.Position = obj.detectorPosition;
 
 % Convert figure to image.
-diffuseMap = figure2image(hFigure,width,height);
+diffuseMap = figure2image(hFigure,obj.imageSize);
 
 % Close figure.
 close(hFigure);
@@ -42,10 +44,13 @@ diffuseMap = im2double(diffuseMap);
 % Flip diffuse map.
 diffuseMap = flipud(diffuseMap);
 
-%% Push data to gpu, if one is available.
+% Push data to gpu, if one is available.
 if isgpuavailable
     diffuseMap = gpuArray(diffuseMap);
 end
+
+%% Assign the associated ...Map-attribute of the object.
+obj.diffuseMap = diffuseMap;
 
 end
 

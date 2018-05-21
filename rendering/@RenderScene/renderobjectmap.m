@@ -1,7 +1,14 @@
-function objectMap = renderobjectmap(mesh,width,height)
+function objectMap = renderobjectmap(obj)
 %RENDEROBJECTMAP Summary of this function goes here
 %   Detailed explanation goes here
 
+% If map was already rendered, then return the already rendered map.
+if ~isempty(obj.objectMap)
+    objectMap = obj.objectMap;
+    return
+end
+
+mesh = obj.mesh;
 
 %% Render the geometry.
 % Set figure properties.
@@ -22,7 +29,7 @@ hPatch = mesh.draw;
 hPatch.EdgeColor = 'none';
 
 % Convert figure to image.
-objectMap = figure2image(hFigure,width,height);
+objectMap = figure2image(hFigure,obj.imageSize);
 
 % Close figure.
 close(hFigure);
@@ -41,5 +48,8 @@ objectMap = imcomplement(objectMap);
 if isgpuavailable
     objectMap = gpuArray(objectMap);
 end
+
+%% Assign the associated ...Map-attribute of the object.
+obj.objectMap = objectMap;
 end
 

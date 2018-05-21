@@ -1,69 +1,18 @@
-function transmissionLengthMap = rendertransmissionlengthmap(mesh,width,height,varargin)
+function transmissionLengthMap = rendertransmissionlengthmap(obj)
 %RENDERTRANSMISSIONLENGTHMAP Generates a transmissionmap of the provided geometry.
-%   Needs a GPU to be run.
-%
-%   Inputs:
-%   =======
-%
-%   mesh - Mesh-object with at least the fields 'vertices' and 'faces'.
-%
-%   width - Width of the rendered shadowmap.
-%
-%   height - Height of the rendered shadowmap.
-%
-%
-%   Optional name-value-pairs:
-%   ==========================
-%
-%   'tileSize' - Sidelength of the square tiles, which are rendered.
-%                Affects the memory consumption and the render speed.
-%                Default: 512
-%
-%   'relativeResolution' - Sets the rendering resolution.
-%                          Example: for 'relativeResolution', 0.5 only
-%                          every second pixel of the shadowmap is
-%                          calculated and the remaining pixels are
-%                          interpolated.
-%                          Default: 1
-%
 
-%% Parse and validate inputs.
+% If map was already rendered, then return the already rendered map.
+if ~isempty(obj.transmissionLengthMap)
+    transmissionLengthMap = obj.transmissionLengthMap;
+    return
+end
 
-% Validation functions.
-
-isValidMesh = @(x) validateattributes( ...
-    x, ...
-    {'Mesh'}, ...
-    {'numel',1});
-
-isValidScalarPixelInput = @(x) validateattributes( ...
-    x, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','positive','scalar','integer'});
-
-isValidRelativeResolution = @(x) validateattributes( ...
-    x, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','scalar','>=',0,'<=',1});
-
-% Default values
-defaultTileSize = 500;
-defaultRelativeResolution = 1;
-
-% Setup input parser
-
-p = inputParser;
-
-p.addRequired('mesh',isValidMesh);
-p.addRequired('width',isValidScalarPixelInput);
-p.addRequired('height',isValidScalarPixelInput);
-p.addParameter('tileSize',defaultTileSize,isValidScalarPixelInput);
-p.addParameter('relativeResolution',defaultRelativeResolution,isValidRelativeResolution);
-
-p.parse(mesh,width,height,varargin{:});
-
-tileSize = p.Results.tileSize;
-relativeResolution = p.Results.relativeResolution;
+% Extract variables from object.
+height = obj.imageSize(1);
+width = obj.imageSize(2);
+tileSize = obj.tileSize;
+relativeResolution = obj.relativeResolution;
+mesh = obj.mesh;
 
 %% Rendering
 % Extract vertices, faces from mesh.
@@ -203,7 +152,11 @@ while doRetry
         switch matlabError.identifier
             case {'parallel:gpu:array:OOM','parallel:gpu:array:pmaxsize'}
                 tileSize = round(tileSize/2);
-                warning('Out of memory. Trying to re-render with a ''tileSize'' of %d.',tileSize);
+                warning([ ...
+                    'Out of memory. Trying to re-render with a ' ...
+                    'temporary ''tileSize'' of %d. To prevent future' ...
+                    ' re-renders, decrease ''tileSize'' permanently.'] ...
+                    ,tileSize);
             otherwise %If another error was thrown, rethrow it.
                 rethrow(matlabError)
         end
@@ -224,5 +177,8 @@ transmissionLengthMap = vertcat(transmissionLengthMapSlices{:});
 
 % Resize image, in case that relativeResolution<1.
 transmissionLengthMap = imresize(transmissionLengthMap,[height width]);
+
+%% Assign the associated ...Map-attribute of the object.
+obj.transmissionLengthMap = transmissionLengthMap;
 end
 
