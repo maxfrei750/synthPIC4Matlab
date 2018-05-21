@@ -1,9 +1,9 @@
-function image = figure2image(hFigure,imageWidth,imageHeight,resolutionDPI)
+function image = figure2image(hFigure,imageSize,resolutionDPI)
 %FIGURE2IMAGE Converts a figure into an image.
 %   The default resolution is 300 dpi.
 
 % Set default value for the resolution.
-if nargin<4
+if nargin<3
     resolutionDPI = 300;
 end
 
@@ -14,19 +14,18 @@ validateattributes( ...
     {'scalar'});
 
 validateattributes( ...
-    imageWidth, ...
+    imageSize, ...
     {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','scalar','positive'});
-
-validateattributes( ...
-    imageHeight, ...
-    {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','scalar','positive'});
+    {'real','finite','nonnan','nonsparse','nonempty','positive','integer','vector','numel',2});
 
 validateattributes( ...
     resolutionDPI, ...
     {'numeric'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar','positive'});
+
+% Assign imageHeight and imageWidth.
+imageHeight = imageSize(1);
+imageWidth = imageSize(2);
 
 % Set cropping buffer
 croppingBuffer = 10;
