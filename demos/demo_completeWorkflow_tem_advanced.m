@@ -56,7 +56,6 @@ mesh = agglomerate.completeMesh;
 % Optional: Plot the mesh.
 figure
 mesh.draw('objectID'); % 'objectID': Color the individual primary particles.
-title('Mesh');
 
 %% Render the agglomerate.
 
