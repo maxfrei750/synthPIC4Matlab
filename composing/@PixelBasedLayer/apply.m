@@ -21,7 +21,17 @@ switch obj.blendMode
         obj.parent.pixelData(obj.mask) = ...
             obj.parent.pixelData(obj.mask) + ...
             obj.pixelData(obj.mask);
-    case {'multiplicative', 'multiply', 'multi'}
+    case {'substractive', 'substract'}
+        % If there is no pixelData to process yet, then create neutral
+        % pixelData.
+        if isempty(obj.parent.pixelData)
+            obj.parent.pixelData = ones(obj.size);
+        end
+        
+        obj.parent.pixelData(obj.mask) = ...
+            obj.parent.pixelData(obj.mask) - ...
+            obj.pixelData(obj.mask);
+    case {'multiplicative', 'multiply'}
         % If there is no pixelData to process yet, then create neutral
         % pixelData.
         if isempty(obj.parent.pixelData)
