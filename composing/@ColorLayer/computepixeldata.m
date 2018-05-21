@@ -3,5 +3,10 @@ function pixelData = computepixeldata(obj)
 %   Detailed explanation goes here
 
 pixelData = ones(obj.parent.size)*obj.color;
+
+% Use gpu, if available.
+if isgpuavailable
+    pixelData = gpuArray(pixelData);
+end
 end
 
