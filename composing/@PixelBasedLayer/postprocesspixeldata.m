@@ -2,6 +2,11 @@ function pixelData = postprocesspixeldata(obj,pixelData)
 %POSTPROCESSPIXELDATA Summary of this function goes here
 %   Detailed explanation goes here
 
+% Use gpu, if available.
+if isgpuavailable
+    pixelData = gpuArray(pixelData);
+end
+
 % Apply strength.
 pixelData = pixelData*obj.strength;
 
