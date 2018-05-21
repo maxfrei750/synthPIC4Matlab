@@ -8,6 +8,7 @@ if ~isempty(obj.diffuseMap)
     return
 end
 
+% Copy mesh.
 mesh = obj.mesh;
 
 %% Set parameters.
