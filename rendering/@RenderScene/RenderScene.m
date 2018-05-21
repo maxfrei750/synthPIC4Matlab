@@ -29,16 +29,6 @@ classdef RenderScene < handle
         objectMaskList
     end
     
-    properties(Hidden=true)
-        colorMapData
-        curvatureMapData
-        diffuseMapData
-        objectMapData
-        binaryObjectMapData
-        transmissionLengthMapData
-        % shadowMapData %Buggy
-    end
-    
     properties(Dependent = true)
         edgeGlowMap
         scanningShadowMap
@@ -110,61 +100,61 @@ classdef RenderScene < handle
         %% Getters
         function objectMap = get.objectMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.objectMapData)
+            if isempty(obj.objectMap)
                 objectMap = renderobjectmap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1));
                 
-                obj.objectMapData = objectMap;
+                obj.objectMap = objectMap;
             else
-                objectMap = obj.objectMapData;
+                objectMap = obj.objectMap;
             end
         end
         
         function binaryObjectMap = get.binaryObjectMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.binaryObjectMapData)
+            if isempty(obj.binaryObjectMap)
                 binaryObjectMap = obj.objectMap > 0;
-                             
-                obj.binaryObjectMapData = binaryObjectMap;
+                
+                obj.binaryObjectMap = binaryObjectMap;
             else
-                binaryObjectMap = obj.binaryObjectMapData;
+                binaryObjectMap = obj.binaryObjectMap;
             end
         end
         
         function colorMap = get.colorMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.colorMapData)
+            if isempty(obj.colorMap)
                 colorMap = rendercolormap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1));
                 
-                obj.colorMapData = colorMap;
+                obj.colorMap = colorMap;
             else
-                colorMap = obj.colorMapData;
+                colorMap = obj.colorMap;
             end
         end
         
         function diffuseMap = get.diffuseMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.diffuseMapData)
+            if isempty(obj.diffuseMap)
                 diffuseMap = renderdiffusemap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1), ...
                     obj.detectorPosition);
                 
-                obj.diffuseMapData = diffuseMap;
+                obj.diffuseMap = diffuseMap;
             else
-                diffuseMap = obj.diffuseMapData;
+                diffuseMap = obj.diffuseMap;
             end
         end
         
         function transmissionLengthMap = get.transmissionLengthMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.transmissionLengthMapData)
+            if isempty(obj.transmissionLengthMap)
                 transmissionLengthMap = rendertransmissionlengthmap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
@@ -172,43 +162,43 @@ classdef RenderScene < handle
                     'tileSize',obj.tileSize, ...
                     'relativeResolution',obj.relativeResolution);
                 
-                obj.transmissionLengthMapData = transmissionLengthMap;
+                obj.transmissionLengthMap = transmissionLengthMap;
             else
-                transmissionLengthMap = obj.transmissionLengthMapData;
+                transmissionLengthMap = obj.transmissionLengthMap;
             end
         end
         
         function curvatureMap = get.curvatureMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.curvatureMapData)
+            if isempty(obj.curvatureMap)
                 curvatureMap = rendercurvaturemap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1));
                 
-                obj.curvatureMapData = curvatureMap;
+                obj.curvatureMap = curvatureMap;
             else
-                curvatureMap = obj.curvatureMapData;
+                curvatureMap = obj.curvatureMap;
             end
         end
         
-        % Buggy
-        %         function shadowMap = get.shadowMap(obj)
-        %             % Render map if it was not rendered before.
-        %             if isempty(obj.shadowMapData)
-        %                 shadowMap = rendershadowmap( ...
-        %                     obj.mesh, ...
-        %                     obj.imageSize(2), ...
-        %                     obj.imageSize(1), ...
-        %                     'tileSize',obj.tileSize, ...
-        %                     'relativeResolution',obj.relativeResolution, ...
-        %                     'detectorPosition',obj.detectorPosition);
+        % % Buggy
+        % function shadowMap = get.shadowMap(obj)
+        %     % Render map if it was not rendered before.
+        %     if isempty(obj.shadowMap)
+        %         shadowMap = rendershadowmap( ...
+        %             obj.mesh, ...
+        %             obj.imageSize(2), ...
+        %             obj.imageSize(1), ...
+        %             'tileSize',obj.tileSize, ...
+        %             'relativeResolution',obj.relativeResolution, ...
+        %             'detectorPosition',obj.detectorPosition);
         %
-        %                 obj.shadowMapData = shadowMap;
-        %             else
-        %                 shadowMap = obj.shadowMapData;
-        %             end
-        %         end
+        %         obj.shadowMap = shadowMap;
+        %     else
+        %         shadowMap = obj.shadowMap;
+        %     end
+        % end
         
         function edgeGlowMap = get.edgeGlowMap(obj)
             edgeGlowMap = renderedgeglowmap( ...
