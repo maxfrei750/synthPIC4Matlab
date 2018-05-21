@@ -55,6 +55,11 @@ classdef NoiseLayer < PixelBasedLayer
             % Restore random seed.
             rng(previousRandomSeed);
             
+            % Apply inversion
+            if obj.inverted
+                noise = 1-noise;
+            end
+            
             % Apply blur.
             if obj.blurStrength > 0
                 noise = imgaussfilt(noise,obj.blurStrength);
