@@ -1,6 +1,12 @@
-function curvatureMap = rendercurvaturemap(mesh,width,height)
+function curvatureMap = rendercurvaturemap(obj)
 %RENDERCURVATUREMAP Summary of this function goes here
 %   Detailed explanation goes here
+
+% If map was already rendered, then return the already rendered map.
+if ~isempty(obj.curvatureMap)
+    curvatureMap = obj.curvatureMap;
+    return
+end
 
 %% Set parameters.
 baseColor = ones(1,3)*0.5;
@@ -12,7 +18,7 @@ hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
 % Get vertex curvatures.
-vertexCurvatures = meshVertexCurvature(mesh.vertices,mesh.faces); 
+vertexCurvatures = meshVertexCurvature(obj.mesh.vertices,obj.mesh.faces); 
 
 % Normalize vertexCurvatures.
 vertexCurvatures(end+1) = 0;
@@ -29,7 +35,7 @@ hPatch = draw_sem(mesh);
 hPatch.EdgeColor = 'none';
 
 % Convert figure to image.
-curvatureMap = figure2image(hFigure,width,height);
+curvatureMap = figure2image(hFigure,obj.imageSize);
 
 % Close figure.
 close(hFigure);
@@ -45,6 +51,9 @@ curvatureMap = flipud(curvatureMap);
 if isgpuavailable
     curvatureMap = gpuArray(curvatureMap);
 end
+
+%% Assign the associated ...Map-attribute of the object.
+obj.curvatureMap = curvatureMap;
 
 end
 

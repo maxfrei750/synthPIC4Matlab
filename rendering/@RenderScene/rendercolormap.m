@@ -1,6 +1,12 @@
-function colorMap = rendercolormap(mesh,width,height)
-%RENDERDIFFUSEMAP Summary of this function goes here
+function colorMap = rendercolormap(obj)
+%RENDERCOLORMAP Summary of this function goes here
 %   Detailed explanation goes here
+
+% If map was already rendered, then return the already rendered map.
+if ~isempty(obj.colorMap)
+    colorMap = obj.colorMap;
+    return
+end
 
 %% Set parameters.
 baseColor = ones(1,3)*0;
@@ -12,13 +18,13 @@ hFigure.Visible = 'off';
 hFigure.Color = baseColor;
 
 % Draw the current geometry.
-hPatch = draw_sem(mesh);
+hPatch = draw_sem(obj.mesh);
 
 % Set patch properties.
 hPatch.EdgeColor = 'none';
 
 % Convert figure to image.
-colorMap = figure2image(hFigure,width,height);
+colorMap = figure2image(hFigure,obj.imageSize);
 
 % Close figure.
 close(hFigure);
@@ -35,5 +41,7 @@ if isgpuavailable
     colorMap = gpuArray(colorMap);
 end
 
+%% Assign the associated ...Map-attribute of the object.
+obj.colorMap = colorMap;
 end
 

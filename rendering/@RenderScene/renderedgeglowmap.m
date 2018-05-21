@@ -1,17 +1,23 @@
-function edgeGlowMap = renderedgeglowmap(diffuseMap,colorMap,edgeGlowSize)
-%RENDEREDGEGLOWMAP Compute an edgeGlowMap based on a diffusemap.
-%   Detailed explanation goes here
+function edgeGlowMap = renderedgeglowmap(obj,edgeGlowSize)
+%RENDEREDGEGLOWMAP Compute an edgeGlowMap based on a diffusemap and a colormap.
 
-%% Validate inputs.
-validateattributes( ...
-    diffuseMap, ...
-    {'numeric','gpuArray'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','ndims',2,'>=',0,'<=',1});
+% Set default value for edgeGlowSize.
+if nargin<2
+    edgeGlowSize = 2;
+end
 
+% Validate input.
 validateattributes( ...
     edgeGlowSize, ...
     {'numeric'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar','positive'});
+
+%% Render necessary maps.
+% Render diffuseMap.
+diffuseMap = obj.renderdiffusemap;
+
+% Render colorMap.
+colorMap = obj.rendercolormap;
 
 %% Calculate edgeGlowMap
 edgeGlowMap = diffuseMap.*colorMap;
@@ -29,6 +35,5 @@ edgeGlowMap = imgaussfilt(edgeGlowMap,edgeGlowSize);
 if isgpuavailable
     edgeGlowMap = gpuArray(edgeGlowMap);
 end
-
 end
 

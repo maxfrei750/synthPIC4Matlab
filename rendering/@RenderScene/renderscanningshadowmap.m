@@ -1,30 +1,34 @@
-function shadowMap = renderscanningshadowmap(objectMask,shadowOffset_max)
+function shadowMap = renderscanningshadowmap(obj,scanningShadowLength)
 %RENDERSCANNINGSHADOWMAP Renders a shadowmap resulting from charge effects.
 
-%% Validate inputs.
-validateattributes( ...
-    objectMask, ...
-    {'numeric','gpuArray'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','ndims',2,'>=',0,'<=',1});
+% Set default value for scanningShadowLength.
+if nargin<2
+    scanningShadowLength = 10;
+end
 
+% Validate input.
 validateattributes( ...
-    shadowOffset_max, ...
+    scanningShadowLength, ...
     {'numeric'}, ...
-    {'real','finite','nonnan','nonsparse','nonempty','nonnegative','scalar','integer'});
+    {'real','finite','nonnan','nonsparse','nonempty','scalar','positive','integer'});
+
+%% Render necessary maps.
+% Render objectMap.
+objectMap = obj.renderobjectmap;
 
 %% Generate shadowmap.
 % Calculate shadowmap only for shadowOffset_max > 0.
-if shadowOffset_max > 0
+if scanningShadowLength > 0
     
-    shadowMaps = cell(shadowOffset_max,1);
+    shadowMaps = cell(scanningShadowLength,1);
     
-    for shadowOffset = 1:shadowOffset_max
+    for shadowOffset = 1:scanningShadowLength
         % Shift the object map.
-        shiftedObjectMask = padarray(objectMask,[0 shadowOffset],0,'pre');
+        shiftedObjectMask = padarray(objectMap,[0 shadowOffset],0,'pre');
         shiftedObjectMask = shiftedObjectMask(:,1:end-shadowOffset);
         
         % Calculate shifted shadowmap.
-        shadowMaps{shadowOffset} = shiftedObjectMask-objectMask;
+        shadowMaps{shadowOffset} = shiftedObjectMask-objectMap;
         shadowMaps{shadowOffset} = clip(shadowMaps{shadowOffset},0,1);
     end
     
@@ -34,7 +38,7 @@ if shadowOffset_max > 0
     % Invert shadowMap
     shadowMap = 1-shadowMap;
 else
-    shadowMap = ones(size(objectMask));
+    shadowMap = ones(size(objectMap));
 end
 
 %% Push data to gpu, if one is available.
