@@ -1,4 +1,4 @@
-classdef RenderScene
+classdef RenderScene < handle
     %RENDERSCENE Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -27,6 +27,16 @@ classdef RenderScene
         
         boundingBoxList
         objectMaskList
+    end
+    
+    properties(Hidden=true)
+        colorMapData
+        curvatureMapData
+        diffuseMapData
+        objectMapData
+        binaryObjectMapData
+        transmissionLengthMapData
+        % shadowMapData %Buggy
     end
     
     properties(Dependent = true)
@@ -70,7 +80,7 @@ classdef RenderScene
         end
         
         %% Setters
-        function obj = set.edgeGlowSize(obj,value)
+        function set.edgeGlowSize(obj,value)
             validateattributes( ...
                 value, ...
                 {'numeric'}, ...
@@ -79,7 +89,7 @@ classdef RenderScene
             obj.edgeGlowSize = value;
         end
         
-        function obj = set.scanningShadowLength(obj,value)
+        function set.scanningShadowLength(obj,value)
             validateattributes( ...
                 value, ...
                 {'numeric'}, ...
@@ -88,7 +98,7 @@ classdef RenderScene
             obj.scanningShadowLength = value;
         end
         
-        function obj = set.transmissionCoefficient(obj,value)
+        function set.transmissionCoefficient(obj,value)
             validateattributes( ...
                 value, ...
                 {'numeric'}, ...
@@ -100,80 +110,92 @@ classdef RenderScene
         %% Getters
         function objectMap = get.objectMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.objectMap)
+            if isempty(obj.objectMapData)
                 objectMap = renderobjectmap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1));
+                
+                obj.objectMapData = objectMap;
             else
-                objectMap = obj.objectMap;
+                objectMap = obj.objectMapData;
             end
         end
         
         function binaryObjectMap = get.binaryObjectMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.binaryObjectMap)
+            if isempty(obj.binaryObjectMapData)
                 binaryObjectMap = obj.objectMap > 0;
+                             
+                obj.binaryObjectMapData = binaryObjectMap;
             else
-                binaryObjectMap = obj.binaryObjectMap;
+                binaryObjectMap = obj.binaryObjectMapData;
             end
         end
         
         function colorMap = get.colorMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.colorMap)
+            if isempty(obj.colorMapData)
                 colorMap = rendercolormap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1));
+                
+                obj.colorMapData = colorMap;
             else
-                colorMap = obj.colorMap;
+                colorMap = obj.colorMapData;
             end
         end
         
         function diffuseMap = get.diffuseMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.diffuseMap)
+            if isempty(obj.diffuseMapData)
                 diffuseMap = renderdiffusemap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1), ...
                     obj.detectorPosition);
+                
+                obj.diffuseMapData = diffuseMap;
             else
-                diffuseMap = obj.diffuseMap;
+                diffuseMap = obj.diffuseMapData;
             end
         end
         
         function transmissionLengthMap = get.transmissionLengthMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.transmissionLengthMap)
+            if isempty(obj.transmissionLengthMapData)
                 transmissionLengthMap = rendertransmissionlengthmap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1), ...
                     'tileSize',obj.tileSize, ...
                     'relativeResolution',obj.relativeResolution);
+                
+                obj.transmissionLengthMapData = transmissionLengthMap;
             else
-                transmissionLengthMap = obj.transmissionLengthMap;
+                transmissionLengthMap = obj.transmissionLengthMapData;
             end
         end
         
         function curvatureMap = get.curvatureMap(obj)
             % Render map if it was not rendered before.
-            if isempty(obj.curvatureMap)
+            if isempty(obj.curvatureMapData)
                 curvatureMap = rendercurvaturemap( ...
                     obj.mesh, ...
                     obj.imageSize(2), ...
                     obj.imageSize(1));
+                
+                obj.curvatureMapData = curvatureMap;
             else
-                curvatureMap = obj.curvatureMap;
+                curvatureMap = obj.curvatureMapData;
             end
         end
         
         % Buggy
         %         function shadowMap = get.shadowMap(obj)
         %             % Render map if it was not rendered before.
-        %             if isempty(obj.shadowMap)
+        %             if isempty(obj.shadowMapData)
         %                 shadowMap = rendershadowmap( ...
         %                     obj.mesh, ...
         %                     obj.imageSize(2), ...
@@ -181,8 +203,10 @@ classdef RenderScene
         %                     'tileSize',obj.tileSize, ...
         %                     'relativeResolution',obj.relativeResolution, ...
         %                     'detectorPosition',obj.detectorPosition);
+        %
+        %                 obj.shadowMapData = shadowMap;
         %             else
-        %                 shadowMap = obj.transmissionLengthMap;
+        %                 shadowMap = obj.shadowMapData;
         %             end
         %         end
         
