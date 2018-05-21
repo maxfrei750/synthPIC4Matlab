@@ -9,7 +9,7 @@ nRays = size(intersectionDistancesArray,1);
 intersectionDistancesArray = intersectionDistancesArray';
 intersectionFlagsArray  = intersectionFlagsArray';
 
-% Gather data from
+% Gather data from gpu to improve speed (sic!).
 intersectionDistancesArray = gather(intersectionDistancesArray);
 intersectionFlagsArray = gather(intersectionFlagsArray);
 
