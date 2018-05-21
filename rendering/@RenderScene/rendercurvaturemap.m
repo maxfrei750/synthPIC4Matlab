@@ -8,6 +8,9 @@ if ~isempty(obj.curvatureMap)
     return
 end
 
+% Copy mesh.
+mesh = obj.mesh;
+
 %% Set parameters.
 baseColor = ones(1,3)*0.5;
 
