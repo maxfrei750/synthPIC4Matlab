@@ -24,6 +24,10 @@ classdef PixelBasedLayer < handle
         size
     end
     
+    methods(Access = protected)
+        pixelData = postprocesspixeldata(obj,pixelData)
+    end
+    
     methods
         %% Setters
         function set.blendMode(obj,value)
