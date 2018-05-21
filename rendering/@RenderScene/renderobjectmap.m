@@ -8,6 +8,7 @@ if ~isempty(obj.objectMap)
     return
 end
 
+% Copy mesh.
 mesh = obj.mesh;
 
 %% Render the geometry.
