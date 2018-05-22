@@ -25,6 +25,7 @@ classdef Mesh
         
         centerOfMass
         centroid
+        volume
         
         vertexNormals
         faceNormals
@@ -135,6 +136,13 @@ classdef Mesh
         
         function centroid = get.centroid(obj)           
             centroid = mean(obj.vertices);
+        end
+        
+        function volume = get.volume(obj)           
+            volume = meshVolume( ...
+                obj.vertices, ...
+                [], ...
+                obj.faces);
         end
         
         function vertexNormals = get.vertexNormals(obj)
