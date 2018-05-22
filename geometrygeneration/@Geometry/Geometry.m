@@ -36,11 +36,11 @@ classdef Geometry < handle
             
             % Create the primitive.
             primitive = createPrimitive(type,lengthArray,varargin{:});
-                       
+            
             % Backup the mesh of the primitive.
             obj.primitiveMesh = Mesh(primitive.vertices,primitive.faces);
             
-            % Basic input parsing to assign properties. Detailed parsing 
+            % Basic input parsing to assign properties. Detailed parsing
             % and error handling is done in the createPrimitive function.
             p = inputParser;
             
@@ -54,7 +54,7 @@ classdef Geometry < handle
             obj.type = lower(p.Results.type);
             obj.lengthArray = p.Results.lengthArray;
             obj.angleArray = p.Results.angleArray;
-            obj.nSidesBase = p.Results.nSidesBase;       
+            obj.nSidesBase = p.Results.nSidesBase;
         end
         
         %% Getter methods
@@ -64,14 +64,9 @@ classdef Geometry < handle
             meshObject = obj.primitiveMesh;
             
             % Apply rotation.
-            % Disable rotation for spheres.
-            if strcmp(obj.type,'sphere')
-                warning('Rotation has no effect on ''sphere''-objects.');
-            else
-                meshObject = meshObject.rotatearoundaxis( ...
-                    obj.rotationAxisDirection, ...
-                    obj.rotationAngleDegree);
-            end
+            meshObject = meshObject.rotatearoundaxis( ...
+                obj.rotationAxisDirection, ...
+                obj.rotationAngleDegree);
             
             % Apply translation.
             meshObject = meshObject.translate(obj.position);
@@ -80,12 +75,7 @@ classdef Geometry < handle
             meshObject = meshObject.subdivide(obj.subdivisionLevel);
             
             % Apply smoothing
-            % Disable smoothing for spheres.
-            if strcmp(obj.type,'sphere')
-                warning('SmoothingLevel has no effect on ''sphere''-objects.');
-            else
-                meshObject = meshObject.smooth(obj.smoothingLevel);
-            end
+            meshObject = meshObject.smooth(obj.smoothingLevel);
             
             % Apply displacement.
             if ~isempty(obj.displacementLayers)
