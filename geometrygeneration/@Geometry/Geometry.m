@@ -44,10 +44,10 @@ classdef Geometry < handle
             % and error handling is done in the createPrimitive function.
             p = inputParser;
             
-            p.addRequired('type',isValidType)
+            p.addRequired('type')
             p.addRequired('lengthArray');
-            p.addParameter('angleArray',[],isValidAngleArray);
-            p.addParameter('nSidesBase',[],isValidNSidesBase);
+            p.addParameter('angleArray',[]);
+            p.addParameter('nSidesBase',[]);
             
             p.parse(type,lengthArray,varargin{:});
             
