@@ -36,9 +36,25 @@ classdef Geometry < handle
             
             % Create the primitive.
             primitive = createPrimitive(type,lengthArray,varargin{:});
-            
+                       
             % Backup the mesh of the primitive.
             obj.primitiveMesh = Mesh(primitive.vertices,primitive.faces);
+            
+            % Basic input parsing to assign properties. Detailed parsing 
+            % and error handling is done in the createPrimitive function.
+            p = inputParser;
+            
+            p.addRequired('type',isValidType)
+            p.addRequired('lengthArray');
+            p.addParameter('angleArray',[],isValidAngleArray);
+            p.addParameter('nSidesBase',[],isValidNSidesBase);
+            
+            p.parse(type,lengthArray,varargin{:});
+            
+            obj.type = lower(p.Results.type);
+            obj.lengthArray = p.Results.lengthArray;
+            obj.angleArray = p.Results.angleArray;
+            obj.nSidesBase = p.Results.nSidesBase;       
         end
         
         %% Getter methods
@@ -46,7 +62,7 @@ classdef Geometry < handle
             
             % Start with the mesh of the primitive.
             meshObject = obj.primitiveMesh;
-                        
+            
             % Apply rotation.
             % Disable rotation for spheres.
             if strcmp(obj.type,'sphere')
