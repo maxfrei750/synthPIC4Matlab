@@ -6,12 +6,12 @@ classdef Mesh
         texture
     end
     
-    properties(SetAccess=private)
+    properties(SetAccess = private)
         nObjects = 0
         facesObjectIDs
     end
     
-    properties(SetAccess=protected)
+    properties(SetAccess = protected)
         faces
         vertices
     end
@@ -90,7 +90,7 @@ classdef Mesh
         end
         
         %% Setter-methods
-        function obj = set.texture(obj,value)
+        function obj = set.texture(obj,value)           
             % Validate the input.
             validateattributes( ...
                 value, ...
