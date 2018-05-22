@@ -116,10 +116,7 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
         end
         
         function volume = get.volume(obj)           
-            volume = meshVolume( ...
-                obj.completeMesh.vertices, ...
-                [], ...
-                obj.completeMesh.faces);
+            volume = obj.completeMesh.volume;
         end
         
         function mass = get.mass(obj)           
