@@ -9,7 +9,7 @@ Microscope Image Synthesis Toolbox (MIST) for Matlab.
 ### In MATLAB:
 1. Add the folder *F* to the MATLAB search path and save the search path (see [link](https://de.mathworks.com/help/matlab/matlab_env/add-remove-or-reorder-folders-on-the-search-path.html)).
 2. Open your *startup.m* file by typing `edit startup.m` into the MATLAB command window and pressing <kbd>Enter</kbd>.
-3. Add the following line to your *startup.m* file:
+3. Add the following lines to your *startup.m* file:
 ```MATLAB
 % Setup MIST4Matlab
 setupMIST4Matlab
