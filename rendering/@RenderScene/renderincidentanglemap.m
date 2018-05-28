@@ -14,17 +14,11 @@ mesh = obj.mesh;
 %% Set parameters.
 baseColor = zeros(1,3);
 
-%% Render the geometry.
-% Set figure properties.
-hFigure = figure;
-hFigure.Visible = 'off';
-hFigure.Color = baseColor;
-
+%% Calculate incidentAngles and set texture.
 % Get face normals.
-faceNormals = meshFaceNormals(mesh.vertices,mesh.faces);
-% faceNormals = meshVertexNormals(mesh.vertices,mesh.faces);
+faceNormals = mesh.faceNormals;
 
-% Calculate incident angles. 
+% Calculate incident angles.
 % Source: Papula (2009) - Mathematische Formelsammlung: Für Ingenieure und Naturwissenschaftler
 % (see also https://en.wikipedia.org/wiki/Dot_product#Geometric_definition)
 incidentAngles = faceNormals(:,3);
@@ -38,31 +32,48 @@ incidentAngles(end-1:end) = [];
 % Set texture.
 mesh.texture = repmat(incidentAngles,1,3);
 
-% Draw the current geometry.
-hPatch = draw_sem(mesh);
+%% Get incidentanglemaps of all objects.
+incidentAngleMap = ones(obj.imageSize);
 
-% Set patch properties.
-hPatch.EdgeColor = 'none';
+for iObject = 1:mesh.nObjects
+    % Get subMesh.
+    subMesh = mesh.extractsubmesh(iObject);
 
-% Convert figure to image.
-incidentAngleMap = figure2image(hFigure,obj.imageSize);
-
-% Close figure.
-close(hFigure);
-
-% Remove redundant color channels.
-incidentAngleMap = incidentAngleMap(:,:,1);
-incidentAngleMap = im2double(incidentAngleMap);
-
-% Flip diffusivity map.
-incidentAngleMap = flipud(incidentAngleMap);
-
-% % % Blur image.
-% % incidentAngleMap = medfilt2(incidentAngleMap,[10 10]);
-% incidentAngleMap = imgaussfilt(incidentAngleMap,1);
-% incidentAngleMap = incidentAngleMap.*obj.renderbinaryobjectmap;
-% incidentAngleMap(~obj.renderbinaryobjectmap) = 0;
-
+    % Set figure properties.
+    hFigure = figure;
+    hFigure.Visible = 'off';
+    hFigure.Color = baseColor;
+    
+    % Draw the current geometry.
+    hPatch = draw_sem(subMesh);
+    
+    % Set patch properties.
+    hPatch.EdgeColor = 'none';
+    
+    % Convert figure to image.
+    currentIncidentAngleMap = figure2image(hFigure,obj.imageSize);
+    
+    % Close figure.
+    close(hFigure);
+    
+    % Remove redundant color channels.
+    currentIncidentAngleMap = currentIncidentAngleMap(:,:,1);
+    currentIncidentAngleMap = im2double(currentIncidentAngleMap);
+    
+    % Flip diffusivity map.
+    currentIncidentAngleMap = flipud(currentIncidentAngleMap);
+    
+    % Replace relevant parts of the incidentAngleMap.
+    doReplace = currentIncidentAngleMap <= incidentAngleMap;
+    incidentAngleMap(doReplace) = ...
+        currentIncidentAngleMap(doReplace);
+    
+    % % Blur image.
+    % incidentAngleMap = medfilt2(incidentAngleMap,[10 10]);
+    incidentAngleMap = imgaussfilt(incidentAngleMap,1);
+%     incidentAngleMap = incidentAngleMap.*obj.renderbinaryobjectmap;
+     incidentAngleMap(~obj.renderbinaryobjectmap) = 1;
+end
 
 %% Push data to gpu, if one is available.
 if isgpuavailable
