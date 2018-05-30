@@ -26,7 +26,7 @@ diameterDistribution = makedist( ...
 fraction = Fraction('octahedron',diameterDistribution);
 
 % fraction.subdivisionLevel = 1;
-% 
+%
 % fraction.displacementLayers = Displacement('simplex'); % Simplex noise is continuous
 % fraction.displacementLayers.strength = 1;
 % fraction.displacementLayers.scale = 20;
@@ -55,110 +55,110 @@ initialRayDirection = [0 0 -1];
 exitDirections = zeros(nRays,3);
 exitPositions = zeros(nRays,3);
 
-iRay = 0;
-
-for x = xSteps
-    for y = ySteps
-        iRay = iRay+1;
+[xGrid,yGrid] = meshgrid(xSteps,ySteps);
+tic; 
+parfor iRay = 1:nRays
+    
+    x = xGrid(iRay);
+    y = yGrid(iRay);
+    
+    rayDirection = initialRayDirection; % Parallel light.
+    rayOrigin = [x y 10e5];
+    
+    % Pick a random raycolor for visualization.
+    rayColor = rand(3,1);
+    
+    while true
+        [isIntersecting,distances] = ...
+            ray_mesh_intersect(rayOrigin,rayDirection,vertices,faces);
         
-        rayDirection = initialRayDirection; % Parallel light.
-        rayOrigin = [x y 10e5];
-                
-        % Pick a random raycolor for visualization.
-        rayColor = rand(3,1);
-        
-        while true
-            [isIntersecting,distances] = ...
-                ray_mesh_intersect(rayOrigin,rayDirection,vertices,faces);
-            
-            % Stop loop as soon as there are no intersections for this ray.
-            if ~any(isIntersecting)
-                break
-            end
-            
-            relevantDistances = distances(isIntersecting);
-            
-            % Ignore non-positive distances, because the ray may only move
-            % forward.
-            relevantDistances(relevantDistances<=0) = inf;
-            
-            % Only the first intersection is relevant.
-            minimumDistance = min(relevantDistances);
-            relevantFaceIndex = find(distances == minimumDistance);
-            
-            if minimumDistance == inf
-                break
-            end
-            
-            % If there are multiple equidistant faces, then randomly pick
-            % one of them.
-            nRelevantFaces = numel(relevantFaceIndex);
-            if nRelevantFaces>1
-                iRelevantFace = randi(nRelevantFaces);
-                relevantFaceIndex = relevantFaceIndex(iRelevantFace);
-                clear iRelevantFace
-            end
-                
-            relevantFace = faces(relevantFaceIndex,:);
-            relevantVertices = vertices(relevantFace,:);
-            
-            % Calculate intersectionVertex.
-            intersectionVertex = rayOrigin+rayDirection*minimumDistance;
-            
-%             % Visualization -----------------------------
-% %             texture = ones(mesh.nFaces,3);
-% %             texture(relevantFaceIndex,:) = [1 0 0];
-% %             mesh.texture = texture;
-% 
-%             hPatch = mesh.draw;
-%             hPatch.FaceAlpha = 0;
-%             
-%             hPoint = scatter3(intersectionVertex(1),intersectionVertex(2),intersectionVertex(3));
-%             hPoint.MarkerEdgeColor = rayColor;
-%             
-%             hRay = plot3([rayOrigin(1) intersectionVertex(1)],[rayOrigin(2) intersectionVertex(2)],[rayOrigin(3) intersectionVertex(3)]);
-%             hRay.Color = rayColor;
-%             hRay.LineWidth = 0.5;
-%             
-%             xlim([0 100]);
-%             ylim([0 100]);
-%             zlim([-50 50]);
-%             drawnow
-            % -------------------------------------------
-            
-            %% Calculate new direction of the refracted ray based on Snell's law.            
-            % Incident ray.
-            incidentRay = intersectionVertex-rayOrigin;
-            
-            % If resulting ray is extremely short, then treat ray as
-            % terminated.
-            if all(abs(incidentRay)<eps)
-                break
-            end
-            
-            % Calculate faceNormal of the intersected face.
-            normalVector = meshFaceNormals(relevantVertices,[1 2 3]);
-            
-            % Calculate new direction of the refracted/reflected ray.
-            rayDirection = calculatenewraydirection(incidentRay,normalVector,ior_inside,ior_outside);
-            
-            %% Use intersectionpoint as new ray origin.
-            rayOrigin = intersectionVertex;
-            
-            a=1;
-            
+        % Stop loop as soon as there are no intersections for this ray.
+        if ~any(isIntersecting)
+            break
         end
         
-        exitDirections(iRay,:) = rayDirection;
-        exitPositions(iRay,:) = rayOrigin;
-          
+        relevantDistances = distances(isIntersecting);
+        
+        % Ignore non-positive distances, because the ray may only move
+        % forward.
+        relevantDistances(relevantDistances<=0) = inf;
+        
+        % Only the first intersection is relevant.
+        minimumDistance = min(relevantDistances);
+        relevantFaceIndex = find(distances == minimumDistance);
+        
+        if minimumDistance == inf
+            break
+        end
+        
+        % If there are multiple equidistant faces, then randomly pick
+        % one of them.
+        nRelevantFaces = numel(relevantFaceIndex);
+        if nRelevantFaces>1
+            iRelevantFace = randi(nRelevantFaces);
+            relevantFaceIndex = relevantFaceIndex(iRelevantFace);
+        end
+        
+        relevantFace = faces(relevantFaceIndex,:);
+        relevantVertices = vertices(relevantFace,:);
+        
+        % Calculate intersectionVertex.
+        intersectionVertex = rayOrigin+rayDirection*minimumDistance;
+        
+        %             % Visualization -----------------------------
+        % %             texture = ones(mesh.nFaces,3);
+        % %             texture(relevantFaceIndex,:) = [1 0 0];
+        % %             mesh.texture = texture;
+        %
+        %             hPatch = mesh.draw;
+        %             hPatch.FaceAlpha = 0;
+        %
+        %             hPoint = scatter3(intersectionVertex(1),intersectionVertex(2),intersectionVertex(3));
+        %             hPoint.MarkerEdgeColor = rayColor;
+        %
+        %             hRay = plot3([rayOrigin(1) intersectionVertex(1)],[rayOrigin(2) intersectionVertex(2)],[rayOrigin(3) intersectionVertex(3)]);
+        %             hRay.Color = rayColor;
+        %             hRay.LineWidth = 0.5;
+        %
+        %             xlim([0 100]);
+        %             ylim([0 100]);
+        %             zlim([-50 50]);
+        %             drawnow
+        % -------------------------------------------
+        
+        %% Calculate new direction of the refracted ray based on Snell's law.
+        % Incident ray.
+        incidentRay = intersectionVertex-rayOrigin;
+        
+        % If resulting ray is extremely short, then treat ray as
+        % terminated.
+        if all(abs(incidentRay)<eps)
+            break
+        end
+        
+        % Calculate faceNormal of the intersected face.
+        normalVector = meshFaceNormals(relevantVertices,[1 2 3]);
+        
+        % Calculate new direction of the refracted/reflected ray.
+        rayDirection = calculatenewraydirection(incidentRay,normalVector,ior_inside,ior_outside);
+        
+        %% Use intersectionpoint as new ray origin.
+        rayOrigin = intersectionVertex;
+        
     end
+    
+    exitDirections(iRay,:) = rayDirection;
+    exitPositions(iRay,:) = rayOrigin;
+    
 end
+
+toc;
 
 exitAngles_degree = acosd(dot(exitDirections,repmat(initialRayDirection,nRays,1),2));
 
 minimumExitAngleMap_degree = ones(height,width)*180;
 
+tic;
 for x = 0:width-1
     j = x+1;
     
@@ -174,10 +174,11 @@ for x = 0:width-1
         relevantExitAngles = exitAngles_degree(isRelevantExitPosition);
         
         if ~isempty(relevantExitAngles)
-            minimumExitAngleMap_degree(i,j) = min(relevantExitAngles);
+            minimumExitAngleMap_degree(i,j) = mean(relevantExitAngles);
         end
     end
 end
+toc;
 
 minimumExitAngleMap_degree = real(minimumExitAngleMap_degree);
 
