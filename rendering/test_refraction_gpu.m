@@ -13,19 +13,31 @@ ior_outside = 1;
 %% Create geometry.
 rng(1)
 
-geometry = Geometry('octahedron',70);
-geometry.rotationAngleDegree = rand*360;
-geometry.rotationAxisDirection = rand(1,3);
+% Create mesh
+d_g = 50;
+s_g = 1.2;
 
-% geometry.subdivisionLevel = 2;
-% geometry.smoothingLevel = 2;
-% 
-% displacement = Displacement('simplex');
-% displacement.scale = 10;
-% displacement.strength = 2;
-% geometry.displacementLayers = displacement;
+nPrimaryParticles = 5;
 
-mesh = geometry.mesh;
+agglomerationMode = 'BCCA';
+
+diameterDistribution = makedist( ...
+    'lognormal', ...
+    'mu',log(d_g), ...
+    'sigma',log(s_g));
+
+fraction = Fraction('sphere',diameterDistribution);
+
+% fraction.subdivisionLevel = 10;
+
+fraction.displacementLayers = Displacement('simplex'); % Simplex noise is continuous
+fraction.displacementLayers.strength = 1;
+fraction.displacementLayers.scale = 20;
+
+agglomerate = Agglomerate(agglomerationMode,fraction,nPrimaryParticles);
+
+mesh = agglomerate.completeMesh;
+
 mesh = mesh.centerat([width/2 height/2 0]);
 
 % Extract vertices, faces from mesh.
@@ -228,8 +240,8 @@ toc;
 
 %%
 
-filter = ones(3)/9;
-minimumExitAngleMap_degree = uint8(conv2(minimumExitAngleMap_degree, filter, 'same'));
+% filter = ones(3)/9;
+% minimumExitAngleMap_degree = uint8(conv2(minimumExitAngleMap_degree, filter, 'same'));
 
 figure
 imagesc(minimumExitAngleMap_degree)
