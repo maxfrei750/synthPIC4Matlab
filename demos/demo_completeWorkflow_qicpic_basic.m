@@ -8,7 +8,7 @@ rng(3);
 
 % Define agglomerate properties.
 primaryParticleType = 'octahedron'; % For other types see 'doc Fraction'.
-nPrimaryParticles = 5; % Number of primary particles in the agglomerate.
+nPrimaryParticles = 2; % Number of primary particles in the agglomerate.
 agglomerationMode = 'DLA'; % Diffusion limited agglomeration (DLA).
 
 % Define a size distribution for the generation of primary particles.
@@ -36,7 +36,7 @@ mesh.draw('objectID'); % 'objectID': Color the individual primary particles.
 %% Render the agglomerate.
 
 % Define the parameters of the render scene.
-imageSize = [400 600]; %[height(y-axis) width(x-axis)]
+imageSize = [200 200]; %[height(y-axis) width(x-axis)]
 
 % Set indices of refraction.
 ior_inside = 1.3;
