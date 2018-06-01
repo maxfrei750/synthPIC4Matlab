@@ -13,6 +13,9 @@ classdef RenderScene < handle
         
         detectorPosition
         
+        ior_inside
+        ior_outside
+        
         %boundingBoxList
         %objectMaskList
     end
@@ -25,42 +28,59 @@ classdef RenderScene < handle
         binaryObjectMap
         transmissionLengthMap
         incidentAngleMap
+        refractionMap
         % shadowMap % Yet to be implemented.
     end
     
     
     methods
         %% Constructor
-        function obj = RenderScene(mesh,imageSize,detectorPosition)
+        function obj = RenderScene(mesh,imageSize,varargin)
             %RENDERSCENE Construct an instance of this class
             %   Detailed explanation goes here
             
-            % Validate mesh and imageSize.
-            validateattributes( ...
-                mesh, ...
+            % Validation functions          
+            isValidMesh = @(x) validateattributes( ...
+                x, ...
                 {'Mesh'}, ...
                 {'nonempty','scalar'});
             
-            validateattributes( ...
-                imageSize, ...
+            isValidImageSize = @(x) validateattributes( ...
+                x, ...
                 {'numeric'}, ...
                 {'real','finite','nonnan','nonsparse','nonempty','positive','integer','vector','numel',2});
             
-            % Set default value for the detector position (centered above
-            % the image, quasi-infinitively far away).
-            if nargin<3
-                detectorPosition = [imageSize/2 10e4];
-            end
-            
-            % Validate detectorPosition.
-            validateattributes( ...
-                detectorPosition, ...
+            isValidDetectorPosition = @(x) validateattributes( ...
+                x, ...
                 {'numeric'}, ...
                 {'real','finite','nonnan','nonsparse','nonempty','row','vector','numel',3});
             
+            isValidIndexOfRefraction = @(x) validateattributes( ...
+                x, ...
+                {'numeric'}, ...
+                {'real','finite','nonnan','nonsparse','nonempty','positive','scalar'});
+            
+            % Default values
+            defaultDetectorPosition = [imageSize/2 10e4];
+            defaultIor_inside = 1.3; %IOR of water
+            defaultIor_outside = 1; %IOR of air
+            
+            % Parse inputs.            
+            p = inputParser;
+            
+            p.addRequired('mesh',isValidMesh);
+            p.addRequired('imageSize',isValidImageSize);
+            p.addParameter('detectorPosition',defaultDetectorPosition,isValidDetectorPosition);
+            p.addParameter('ior_inside',defaultIor_inside,isValidIndexOfRefraction);
+            p.addParameter('ior_outside',defaultIor_outside,isValidIndexOfRefraction);
+            
+            p.parse(mesh,imageSize,varargin{:});         
+            
             obj.mesh = mesh;
             obj.imageSize = imageSize;
-            obj.detectorPosition = detectorPosition;
+            obj.detectorPosition = p.Results.detectorPosition;
+            obj.ior_inside = p.Results.ior_inside;
+            obj.ior_outside = p.Results.ior_outside;
         end       
     end
 end
