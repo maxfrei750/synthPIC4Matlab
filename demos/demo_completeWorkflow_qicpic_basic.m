@@ -8,7 +8,7 @@ rng(3);
 
 % Define agglomerate properties.
 primaryParticleType = 'octahedron'; % For other types see 'doc Fraction'.
-nPrimaryParticles = 2; % Number of primary particles in the agglomerate.
+nPrimaryParticles = 3; % Number of primary particles in the agglomerate.
 agglomerationMode = 'DLA'; % Diffusion limited agglomeration (DLA).
 
 % Define a size distribution for the generation of primary particles.
@@ -52,13 +52,18 @@ renderScene = RenderScene(mesh,imageSize,'ior_inside',ior_inside,'ior_outside',i
 renderScene.tileSize = 150;
 refractionMap = renderScene.renderrefractionmap;
 
+% Optional: Filter the refractionMap.
+filterSize = 3;
+filterKernel = ones(filterSize)/(filterSize^2);
+refractionMap = conv2(refractionMap,filterKernel,'same');
+
 % Optional: Show the retrieved map.
 figure
 imagesc(refractionMap)
 cBar = colorbar;
 ylabel(cBar,'Minimum exit angle [°]');
 
-angleThreshold_degree = 10;
+angleThreshold_degree = 15;
 
 intensityMap = refractionMap<=angleThreshold_degree;
 
