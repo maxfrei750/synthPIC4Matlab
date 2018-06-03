@@ -52,6 +52,12 @@ rayOrigins = [xGrid(:) yGrid(:) ones(nRays_total,1)*1e2];
 % Calculate facenormals of the geometry for later use.
 faceNormals = meshFaceNormals(vertices,faces);
 
+% Retrieve an binaryObjectMap to determine which rays need to be traced.
+% binaryObjectMap = obj.renderbinaryobjectmap;
+relevantRayIndices = getrelevantrays(vertices,faces,xGrid(:),yGrid(:));
+binaryObjectMap = false(nRays_total,1);
+binaryObjectMap(relevantRayIndices) = true;
+
 % Try to render with the current tileSize. If it fails, decrease it and try
 % again.
 
@@ -81,7 +87,7 @@ while doRetry
             
             initialRayDirections_batch = gpuArray(repmat([0 0 -1],nRays_batch,1));
             rayDirections_batch = initialRayDirections_batch;
-            isRelevantRay = true(nRays_batch,1);
+            isRelevantRay = binaryObjectMap(iRay_start:iRay_end);
             
             distancesDummy = NaN(nRays_batch,nFaces,'gpuArray');
             isIntersectingDummy = false(nRays_batch,nFaces,'gpuArray');
