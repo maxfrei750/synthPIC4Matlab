@@ -1,5 +1,5 @@
 function [relevantFaceIndices,relevantRayIndices] = getrelevantfacesandrays(vertices,faces,rayIncidentPoints_x,rayIncidentPoints_y)
-%GETRELEVANTFACES Determines faces which are relevant for the raytracing.
+%GETRELEVANTFACESANDRAYS Determines faces and rays which are relevant for the raytracing.
 
 %% Get number of faces.
 nFaces = size(faces,1); 
