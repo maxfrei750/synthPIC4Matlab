@@ -31,6 +31,7 @@ classdef Mesh
         faceNormals
         
         boundingBox
+        boundingBox2d
         
         XData
         YData
@@ -155,6 +156,10 @@ classdef Mesh
         
         function boundingBox = get.boundingBox(obj)
             boundingBox = BoundingBox(obj.vertices);
+        end
+        
+        function boundingBox2d = get.boundingBox2d(obj)
+            boundingBox2d = calculateboundingbox2d(obj);
         end
         
         function XData = get.XData(obj)
