@@ -33,6 +33,8 @@ classdef Mesh
         boundingBox
         boundingBox2d
         
+        mask
+        
         XData
         YData
         ZData
@@ -160,6 +162,10 @@ classdef Mesh
         
         function boundingBox2d = get.boundingBox2d(obj)
             boundingBox2d = calculateboundingbox2d(obj);
+        end
+        
+        function mask = get.mask(obj)
+            mask = createmask(obj);
         end
         
         function XData = get.XData(obj)
