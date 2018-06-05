@@ -16,7 +16,7 @@ end
 % Concatenate meshes. Faces MUST be concatenated before vertices.
 obj1.faces = ...
     [obj1.faces;obj2.faces+obj1.nVertices];
-obj1.nObjects = obj1.nObjects+1;
+% obj1.nObjects = obj1.nObjects+1;
 obj1.facesObjectIDs = ...
     [obj1.facesObjectIDs;obj2.facesObjectIDs+obj1.nObjects];
 obj1.texture = [obj1.texture;obj2.texture];

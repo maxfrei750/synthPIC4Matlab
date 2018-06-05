@@ -7,7 +7,6 @@ classdef Mesh
     end
     
     properties(SetAccess = private)
-        nObjects = 0
         facesObjectIDs
     end
     
@@ -22,6 +21,8 @@ classdef Mesh
         nVertices
         nEdges
         nFaces
+        
+        nObjects
         
         centerOfMass
         centroid
@@ -120,6 +121,10 @@ classdef Mesh
         
         function nEdges = get.nEdges(obj)
             nEdges = size(obj.edges,1);
+        end
+        
+        function nObjects = get.nObjects(obj)
+            nObjects = max(obj.facesObjectIDs);
         end
         
         function centerOfMass = get.centerOfMass(obj)
