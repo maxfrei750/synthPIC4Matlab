@@ -33,6 +33,7 @@ classdef Mesh
         
         boundingBox
         boundingBox2d
+        subBoundingBoxes2d
         
         mask
         
@@ -167,6 +168,10 @@ classdef Mesh
         
         function boundingBox2d = get.boundingBox2d(obj)
             boundingBox2d = calculateboundingbox2d(obj);
+        end
+        
+        function subBoundingBoxes2d = get.subBoundingBoxes2d(obj)
+            subBoundingBoxes2d = getsubboundingboxes2d(obj);
         end
         
         function mask = get.mask(obj)
