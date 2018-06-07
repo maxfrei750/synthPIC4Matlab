@@ -130,18 +130,7 @@ classdef Mesh
         end
         
         function centerOfMass = get.centerOfMass(obj)
-            nRandomPointsInVolume = 10000;
-            
-            randomPointsInVolume = ...
-                getrandompointsinmesh(obj,nRandomPointsInVolume);
-            
-            % % Plot the random points.
-            % scatter3( ...
-            %     randomPointsInVolume(:,1), ...
-            %     randomPointsInVolume(:,2), ...
-            %     randomPointsInVolume(:,3));
-            
-            centerOfMass = mean(randomPointsInVolume);
+            centerOfMass = calculatecenterofmass(obj);
         end
         
         function centroid = get.centroid(obj)           
