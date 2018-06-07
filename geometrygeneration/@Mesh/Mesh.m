@@ -36,6 +36,7 @@ classdef Mesh
         subBoundingBoxes2d
         
         mask
+        subMasks
         
         XData
         YData
@@ -176,6 +177,10 @@ classdef Mesh
         
         function mask = get.mask(obj)
             mask = createmask(obj);
+        end
+        
+        function subMasks = get.subMasks(obj)
+            subMasks = getsubmasks(obj);
         end
         
         function XData = get.XData(obj)
