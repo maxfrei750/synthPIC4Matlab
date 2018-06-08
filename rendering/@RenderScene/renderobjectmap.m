@@ -20,7 +20,7 @@ hFigure.Color = [1 1 1];
 hAxis = axes;
 hAxis.Color = [1 1 1];
 
-% Set texture of the mesh to uniform white.
+% Set texture of the mesh to uniform black.
 mesh.texture = zeros(mesh.nVertices,3);
 
 % Draw the current geometry.
