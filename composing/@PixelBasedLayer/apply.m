@@ -17,7 +17,7 @@ if isempty(obj.parent.pixelData)
     switch obj.blendMode
         case {'additive', 'add'}
             obj.parent.pixelData = zeros(obj.size);
-        case {'subtractive', 'subtract', 'multiplicative', 'multiply'}
+        case {'subtractive', 'subtract', 'multiplicative', 'multiply','replace','overlay'}
             obj.parent.pixelData = ones(obj.size);
     end
     
@@ -37,6 +37,9 @@ switch obj.blendMode
     case {'multiplicative', 'multiply'}       
         obj.parent.pixelData(obj.mask) = ...
             obj.parent.pixelData(obj.mask) .* ...
+            obj.pixelData(obj.mask);
+    case {'overlay','replace'}       
+        obj.parent.pixelData(obj.mask) = ...
             obj.pixelData(obj.mask);
 end
 

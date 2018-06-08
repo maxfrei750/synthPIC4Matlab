@@ -33,6 +33,8 @@ classdef PixelBasedLayer < handle
                 'multiply'
                 'subtractive'
                 'subtract'
+                'overlay'
+                'replace'
                 };
             
             validatestring(value,expectedBlendModes);
