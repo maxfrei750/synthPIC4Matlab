@@ -134,7 +134,7 @@ classdef Mesh
         end
         
         function centroid = get.centroid(obj)           
-            centroid = mean(obj.vertices);
+            centroid = min(obj.vertices)+range(obj.vertices)/2;
         end
         
         function volume = get.volume(obj)           
