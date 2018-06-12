@@ -2,7 +2,7 @@ clear
 close all
 
 % Ensure reproducibility.
-rng(3); 
+rng(1); 
 
 %% Generate a mesh of an agglomerate.
 
@@ -36,14 +36,15 @@ mesh.draw('objectID'); % 'objectID': Color the individual primary particles.
 %% Render the agglomerate.
 
 % Define the parameters of the render scene.
-imageSize = [200 200]; %[height(y-axis) width(x-axis)]
+imageSize = flip(ceil(mesh.boundingBox2d(3:4))); %[height(y-axis) width(x-axis)]
 
 % Set indices of refraction.
 ior_inside = 1.3;
 ior_outside = 1;
 
 % Position the mesh at the center of the image.
-mesh = mesh.centerat([imageSize(2)/2 imageSize(1)/2 0]); % [x y z]
+mesh = mesh.centerat([mesh.boundingBox2d(3:4)/2 0]); % [x y z]
+%mesh = mesh.centerat([0 0 0]); % [x y z]
 
 % Create a RenderScene-object.
 renderScene = RenderScene(mesh,imageSize,'ior_inside',ior_inside,'ior_outside',ior_outside);
