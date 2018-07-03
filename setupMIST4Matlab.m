@@ -9,6 +9,7 @@ subPathList = {
     fullfile('external','gptoolbox','external','matlabPyrTools')
     fullfile('external','gptoolbox','mesh')
     fullfile('external','MATLAB-GJK-Collision-Detection')
+    fullfile('external','ParforProgMon')
     fullfile('external','Hardware accelerated ray-triangle intersection')
     fullfile('external','geom3d','meshes3d')
     fullfile('external','geom3d','geom3d')
