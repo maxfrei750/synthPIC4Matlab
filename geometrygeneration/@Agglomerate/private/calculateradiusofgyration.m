@@ -18,7 +18,7 @@ momentOfInertia = ...
     sum(squaredDistancesToCenterOfMass.*weights);
 
 % Calculate the radius of gyration.
-radiusOfGyration = sqrt(momentOfInertia/obj.mass);
+radiusOfGyration = sqrt(momentOfInertia/sum(weights));
 
 % % Plot radius of gyration.
 % obj.draw
