@@ -1,10 +1,9 @@
-function obj_C = addchild(obj_A,obj_B)
+function obj_A = addchild(obj_A,obj_B)
 %ADDCHILD Summary of this function goes here
 %   Detailed explanation goes here
 
-obj_C = obj_A;
+% obj_C = obj_A.copy;
 
-obj_C.childList = [obj_A.childList obj_B.childList];
-obj_C.nChildren = obj_A.nChildren+obj_B.nChildren;
+obj_A.childList = [obj_A.childList obj_B];
 end
 

@@ -2,14 +2,20 @@ function isOverlapping = isoverlapping(obj_A,obj_B)
 %ISOVERLAPPING Summary of this function goes here
 %   Detailed explanation goes here
 
-for iChild_A = 1:obj_A.nChildren
+subObjectList_A = [obj_A obj_A.getalldescendants];
+subObjectList_B = [obj_B obj_B.getalldescendants];
+
+nSubObjects_A = numel(subObjectList_A);
+nSubObjects_B = numel(subObjectList_B);
+
+for iSubObject_A = 1:nSubObjects_A
     
-    child_A = obj_A.childList(iChild_A);
+    subObject_A = subObjectList_A(iSubObject_A);
     
-    for iChild_B = 1:obj_B.nChildren
-        child_B = obj_B.childList(iChild_B);
+    for iSubObject_B = 1:nSubObjects_B
+        subObject_B = subObjectList_B(iSubObject_B);
         
-        isOverlapping = detectmeshcollision(child_A.mesh,child_B.mesh);
+        isOverlapping = detectmeshcollision(subObject_A.mesh,subObject_B.mesh);
         
         if isOverlapping
             break

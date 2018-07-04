@@ -4,11 +4,12 @@ function [randomPoints,weights] = getrandompointsinvolume(obj)
 
 % Determine total volume of the object and the volumes of the primary 
 % particles.
-volumes = [obj.childList.volume];
+meshes = [obj.mesh obj.getalldescendants.mesh];
+volumes = arrayfun(@(x) x.volume,meshes);
 volume_total = sum(volumes);
 
-% Draw one random point per 5x5x5 volume.
-nRandomPoints_total = round(volume_total/125);
+% Draw one random point per 4x4x4 volume.
+nRandomPoints_total = round(volume_total/64);
 
 relativeVolumes = volumes/volume_total;
 
@@ -20,18 +21,21 @@ weights = zeros(nRandomPoints_total,1);
 
 startIndex = 1;
 
-% Iterate all children.
-for iChild = 1:obj.nChildren
-    child = obj.childList(iChild);
+% Iterate object and all descendants.
+objectList = [obj obj.getalldescendants];
+nObjects = numel(objectList);
+
+for iObject = 1:nObjects
+    object = objectList(iObject);
     
-    nRandomPoints = nRandomPointsArray(iChild);
+    nRandomPoints = nRandomPointsArray(iObject);
     
     endIndex  = startIndex+nRandomPoints-1;
     
     randomPoints(startIndex:endIndex,:) = ...
-        getrandompointsinmesh(child.mesh,nRandomPoints);
+        getrandompointsinmesh(object.mesh,nRandomPoints);
     
-    weights(startIndex:endIndex) = child.bulkDensity;
+    weights(startIndex:endIndex) = object.bulkDensity;
     
     startIndex = endIndex+1;
 end

@@ -1,20 +1,17 @@
-classdef Agglomerate < handle% matlab.mixin.Copyable
+classdef Agglomerate < matlab.mixin.Copyable
     %AGGLOMERATE Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        mesh
+        mesh = Mesh.empty;
         bulkDensity = 1
         fractions = Fraction.empty
         agglomerationMode
         agglomerationSpeed
         
         randomSeed
-    end
-    
-    properties(SetAccess = private)
+
         childList = Agglomerate.empty
-        nChildren = 1
     end
     
     properties(Dependent = true)
@@ -26,13 +23,12 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
         radiusOfGyration
         centerOfMass
         nFractions
+        nChildren
     end
 
     methods
         function obj = Agglomerate(agglomerationMode,fractions,nParticles,varargin)
             %AGGLOMERATE Construct an agglomerate.
-            
-            obj.childList(1) = obj;
             
             % Allow creation of dummy agglomerates.
             if nargin == 0
@@ -79,6 +75,8 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
             % Create the particle list.
             particleList = createparticlelist(fractions,nParticles);
             
+%             obj.childList(1) = particleList(1).copy;
+            
             % Distinguish the different agglomeration mechanisms.
             switch obj.agglomerationMode
                 case 'BPCA'
@@ -94,16 +92,22 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
                     randomness = 1;
                     obj = obj.clusteragglomeration(particleList,randomness);
             end
+            
         end
         
         %% Getter methods.
         function completeMesh = get.completeMesh(obj)
             
-            completeMesh = Mesh.empty;
+            completeMesh = obj.mesh;
             
-            for iChild = 1:obj.nChildren
-                child = obj.childList(iChild);
-                completeMesh = completeMesh+child.mesh;
+            % Gather descendants.
+            descendants = obj.getalldescendants;
+            nDescendants = numel(descendants);
+            
+            % Iterate all descendants.
+            for iDescendant = 1:nDescendants
+                descendant = descendants(iDescendant);
+                completeMesh = completeMesh+descendant.mesh;
             end
         end
         
@@ -120,8 +124,9 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
         end
         
         function mass = get.mass(obj)           
-            volumes = [obj.childList.volume];
-            bulkDensities = [obj.childList.bulkDensity];
+            meshes = [obj.mesh obj.getalldescendants.mesh];
+            volumes = arrayfun(@(x) x.volume,meshes);
+            bulkDensities = [obj.bulkDensity obj.getalldescendants.bulkDensity];
             mass = sum(volumes.*bulkDensities);
         end
         
@@ -136,6 +141,10 @@ classdef Agglomerate < handle% matlab.mixin.Copyable
         function nFractions = get.nFractions(obj)
             nFractions = numel(obj.fractions);
         end 
+        
+        function nChildren = get.nChildren(obj)
+            nChildren = numel(obj.childList);
+        end
         
     end
 end

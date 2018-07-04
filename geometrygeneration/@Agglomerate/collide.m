@@ -127,6 +127,7 @@ while not(isoverlapping(obj_A,obj_B))
     % Plot the collision.
     if doPlot
         plotcollision(obj_A,obj_B,doPlotRotation)
+        pause(0.1)
     end
     
     totalTranslationVector = totalTranslationVector+translationVector;
@@ -147,6 +148,7 @@ if doRewind
         % Plot the collision.
         if doPlot
             plotcollision(obj_A,obj_B,doPlotRotation)
+            pause(0.1)
         end
     end
 end
@@ -158,6 +160,7 @@ obj_B = obj_B.translate(translationVector);
 % Plot the collision.
 if doPlot
     plotcollision(obj_A,obj_B,doPlotRotation)
+    pause(0.1)
 end
 
 %% Make obj_B a child of obj_A.
