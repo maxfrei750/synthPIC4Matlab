@@ -18,6 +18,7 @@ classdef Agglomerate < matlab.mixin.Copyable
     
     properties(Dependent = true)
         primaryParticles
+        nPrimaryParticles
         boundingBox
         completeMesh
         centroid
@@ -151,6 +152,10 @@ classdef Agglomerate < matlab.mixin.Copyable
         
         function primaryParticles = get.primaryParticles(obj)
             primaryParticles = [obj obj.getalldescendants];
+        end
+        
+        function nPrimaryParticles = get.nPrimaryParticles(obj)
+            nPrimaryParticles = numel(obj.primaryParticles);
         end
         
     end
