@@ -10,7 +10,9 @@ classdef Agglomerate < matlab.mixin.Copyable
         agglomerationSpeed
         
         randomSeed
-
+    end
+    
+    properties(SetAccess=private)
         childList = Agglomerate.empty
     end
     
