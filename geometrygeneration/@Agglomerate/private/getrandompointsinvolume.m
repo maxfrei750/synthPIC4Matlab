@@ -8,8 +8,8 @@ meshes = [obj.mesh obj.getalldescendants.mesh];
 volumes = arrayfun(@(x) x.volume,meshes);
 volume_total = sum(volumes);
 
-% Draw one random point per 4x4x4 volume.
-nRandomPoints_total = round(volume_total/64);
+% Draw one random point per 2x2x2 volume.
+nRandomPoints_total = round(volume_total/8);
 
 relativeVolumes = volumes/volume_total;
 
