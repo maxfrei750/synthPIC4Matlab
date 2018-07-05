@@ -6,7 +6,7 @@ descendants = Agglomerate.empty;
 
 % Iterate all children of the aggloemrate.
 for iChild = 1:obj.nChildren
-    child = obj.childList(iChild);
+    child = obj.children(iChild);
     
     % Add child, because it is a descendant itself.
     descendants = [descendants child];

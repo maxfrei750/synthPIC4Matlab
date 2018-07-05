@@ -13,7 +13,7 @@ classdef Agglomerate < matlab.mixin.Copyable
     end
     
     properties(SetAccess=private)
-        childList = Agglomerate.empty
+        children = Agglomerate.empty
     end
     
     properties(Dependent = true)
@@ -145,7 +145,7 @@ classdef Agglomerate < matlab.mixin.Copyable
         end 
         
         function nChildren = get.nChildren(obj)
-            nChildren = numel(obj.childList);
+            nChildren = numel(obj.children);
         end
         
     end
