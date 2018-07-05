@@ -102,16 +102,15 @@ classdef Agglomerate < matlab.mixin.Copyable
         %% Getter methods.
         function completeMesh = get.completeMesh(obj)
             
-            completeMesh = obj.mesh;
+            completeMesh = Mesh.empty;
             
-            % Gather descendants.
-            descendants = obj.getalldescendants;
-            nDescendants = numel(descendants);
+            particles = obj.primaryParticles;
+            nParticles = obj.nPrimaryParticles;
             
             % Iterate all descendants.
-            for iDescendant = 1:nDescendants
-                descendant = descendants(iDescendant);
-                completeMesh = completeMesh+descendant.mesh;
+            for iParticle = 1:nParticles
+                particle = particles(iParticle);
+                completeMesh = completeMesh+particle.mesh;
             end
         end
         
@@ -127,10 +126,10 @@ classdef Agglomerate < matlab.mixin.Copyable
             volume = obj.completeMesh.volume;
         end
         
-        function mass = get.mass(obj)           
-            meshes = [obj.mesh obj.getalldescendants.mesh];
-            volumes = arrayfun(@(x) x.volume,meshes);
-            bulkDensities = [obj.bulkDensity obj.getalldescendants.bulkDensity];
+        function mass = get.mass(obj)
+            meshes = [obj.primaryParticles.mesh];
+            volumes = [meshes.volume];
+            bulkDensities = [obj.primaryParticles.bulkDensity];
             mass = sum(volumes.*bulkDensities);
         end
         

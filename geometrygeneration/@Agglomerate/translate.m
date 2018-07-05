@@ -1,13 +1,9 @@
 function obj = translate(obj,translationvector)
-% Translate mesh of the object itself.
-obj.mesh = obj.mesh.translate(translationvector);
 
-% Translate meshes of its descendants.
-descendants = obj.getalldescendants;
-nDescendants = numel(descendants);
+particles = obj.primaryParticles;
 
-for iDescendants = 1:nDescendants
-    descendant = descendants(iDescendants);
-    descendant.mesh = descendant.mesh.translate(translationvector);
+for iParticle = 1:obj.nPrimaryParticles
+    particle = particles(iParticle);
+    particle.mesh = particle.mesh.translate(translationvector);
 end
 end
