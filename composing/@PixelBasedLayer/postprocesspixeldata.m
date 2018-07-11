@@ -26,5 +26,9 @@ if obj.inverted
     pixelData = 1-pixelData;
 end
 
+% Apply mask.
+pixelData = pixelData.*obj.mask;
+
+
 end
 
