@@ -36,7 +36,7 @@ classdef SyntheticImage < handle
         
         %% Getters
         function nLayers = get.nLayers(obj)
-            nLayers = numel(obj.layerList);
+            nLayers = numel(obj.layers);
         end
     end
 end
