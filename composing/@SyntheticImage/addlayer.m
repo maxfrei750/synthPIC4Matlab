@@ -7,7 +7,7 @@ if isa(layer,'BlurLayer') && obj.nLayers == 0
 end
 
 layer.parent = obj;
-obj.layerList{end+1} = layer;
+obj.layers{end+1} = layer;
 layer.apply;
 
 end

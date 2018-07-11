@@ -5,14 +5,14 @@ classdef SyntheticImage < handle
     properties(Access = public)
         pixelData
         
-        boundingBoxArray
-        maskArray
+        boundingBoxes
+        masks
         completeMask
     end
     
     properties(SetAccess = private)
         size
-        layerList = {}
+        layers = {}
     end
     
     properties(Dependent = true)
