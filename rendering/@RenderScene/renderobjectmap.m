@@ -24,7 +24,7 @@ hAxis.Color = [1 1 1];
 mesh.texture = zeros(mesh.nVertices,3);
 
 % Draw the current geometry.
-mesh.draw;
+draw_sem(mesh);
 
 % Convert figure to image.
 objectMap = figure2image(hFigure,obj.imageSize);
