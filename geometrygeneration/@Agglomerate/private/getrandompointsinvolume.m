@@ -9,8 +9,8 @@ meshes = [particles.mesh];
 volumes = [meshes.volume];
 volume_total = sum(volumes);
 
-% Draw one random point per 2x2x2 volume.
-nRandomPoints_total = round(volume_total/8);
+% Draw one random point per 4x4x4 volume.
+nRandomPoints_total = round(volume_total/64);
 
 relativeVolumes = volumes/volume_total;
 
