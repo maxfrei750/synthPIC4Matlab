@@ -30,9 +30,6 @@ imageWidth = imageSize(2);
 % Set cropping buffer
 croppingBuffer = 10;
 
-% Try to use a hardware renderer.
-opengl hardware
-
 % Set figure properties.
 hFigure.Units = 'normalized';
 hFigure.OuterPosition = [0 0 0.5 0.5];
