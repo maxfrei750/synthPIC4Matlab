@@ -31,6 +31,8 @@ classdef RenderScene < handle
         incidentAngleMap
         refractionMap
         occlusionMap
+        individualOcclusionMaps
+        
         % shadowMap % Yet to be implemented.
     end
     
