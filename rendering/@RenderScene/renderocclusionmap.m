@@ -59,6 +59,6 @@ if isgpuavailable
 end
 
 %% Assign the associated ...Map-attribute of the object.
-obj.objectMap = occlusionMap;
+obj.occlusionMap = occlusionMap;
 end
 
