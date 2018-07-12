@@ -30,6 +30,7 @@ classdef RenderScene < handle
         transmissionLengthMap
         incidentAngleMap
         refractionMap
+        occlusionMap
         % shadowMap % Yet to be implemented.
     end
     
