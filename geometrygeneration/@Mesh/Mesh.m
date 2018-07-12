@@ -97,7 +97,13 @@ classdef Mesh
         end
         
         %% Setter-methods
-        function obj = set.texture(obj,value)           
+        function obj = set.texture(obj,value)      
+            % If the value has just one column than replicate it to three
+            % columns.
+            if size(value,2) == 1
+                value = repmat(value,1,3);
+            end
+            
             % Validate the input.
             validateattributes( ...
                 value, ...
