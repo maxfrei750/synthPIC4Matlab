@@ -16,8 +16,8 @@ classdef RenderScene < handle
         ior_inside
         ior_outside
         
-        %boundingBoxList
-        %objectMaskList
+        boundingBoxes
+        masks
     end
     
     properties(Access = private, Hidden = true)
@@ -26,6 +26,7 @@ classdef RenderScene < handle
         diffuseMap
         objectMap
         binaryObjectMap
+        individualObjectMaps
         transmissionLengthMap
         incidentAngleMap
         refractionMap
@@ -81,6 +82,9 @@ classdef RenderScene < handle
             obj.detectorPosition = p.Results.detectorPosition;
             obj.ior_inside = p.Results.ior_inside;
             obj.ior_outside = p.Results.ior_outside;
+            
+            obj.boundingBoxes = mesh.subBoundingBoxes2d;
+            obj.masks = mesh.subMasks;
         end       
     end
 end
