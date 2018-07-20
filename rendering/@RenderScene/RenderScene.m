@@ -18,6 +18,8 @@ classdef RenderScene < handle
         
         boundingBoxes
         masks
+        
+        backgroundColor
     end
     
     properties(Access = private, Hidden = true)
@@ -63,11 +65,12 @@ classdef RenderScene < handle
                 x, ...
                 {'numeric'}, ...
                 {'real','finite','nonnan','nonsparse','nonempty','positive','scalar'});
-            
+                        
             % Default values
             defaultDetectorPosition = [imageSize/2 10e4];
             defaultIor_inside = 1.3; %IOR of water
             defaultIor_outside = 1; %IOR of air
+            defaultBackgroundColor = [1 1 1];
             
             % Parse inputs.            
             p = inputParser;
@@ -77,6 +80,7 @@ classdef RenderScene < handle
             p.addParameter('detectorPosition',defaultDetectorPosition,isValidDetectorPosition);
             p.addParameter('ior_inside',defaultIor_inside,isValidIndexOfRefraction);
             p.addParameter('ior_outside',defaultIor_outside,isValidIndexOfRefraction);
+            p.addParameter('backgroundColor',defaultBackgroundColor);
             
             p.parse(mesh,imageSize,varargin{:});         
             
@@ -85,6 +89,13 @@ classdef RenderScene < handle
             obj.detectorPosition = p.Results.detectorPosition;
             obj.ior_inside = p.Results.ior_inside;
             obj.ior_outside = p.Results.ior_outside;
+            obj.backgroundColor = p.Results.backgroundColor;
+            
+            % If the user specified a greyscale color, then make it an rgb
+            % color.
+            if isnumeric(obj.backgroundColor) && numel(obj.backgroundColor) == 1
+                obj.backgroundColor = repmat(obj.backgroundColor,1,3);
+            end
             
             obj.boundingBoxes = mesh.subBoundingBoxes2d;
             obj.masks = mesh.subMasks;
