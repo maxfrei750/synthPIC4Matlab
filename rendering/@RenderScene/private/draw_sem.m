@@ -4,6 +4,8 @@ function hPatch = draw_sem(obj)
 
 assert(isa(obj,'Mesh'),'Expected input to be an object of class Mesh.');
 
+opengl software
+
 %% Draw the geometry.
 hPatch = drawMesh(obj);
 hPatch.FaceVertexCData = obj.texture;
@@ -14,13 +16,16 @@ if size(obj.texture,1) == obj.nFaces
     hPatch.FaceColor = 'flat';
 else 
     hPatch.FaceColor = 'interp';
-    hPatch.FaceLighting = 'phong';
 end
 
 hPatch.LineStyle = 'none';
 daspect([1 1 1])
 view(2)
 material dull
+
+warning('off','MATLAB:opengl:unableToSelectHWGL');
+opengl hardware
+warning('on','MATLAB:opengl:unableToSelectHWGL');
 
 %% If no outputargument was requested, then clear hPatch.
 if nargout == 0
