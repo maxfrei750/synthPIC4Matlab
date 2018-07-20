@@ -41,7 +41,9 @@ occlusionMap = figure2image(hFigure,obj.imageSize);
 close(hFigure);
 
 % Reactivate anti-aliasing
+warning('off','MATLAB:opengl:unableToSelectHWGL');
 opengl hardware
+warning('on','MATLAB:opengl:unableToSelectHWGL');
 
 % Remove redundant color channels.
 occlusionMap = occlusionMap(:,:,1);
