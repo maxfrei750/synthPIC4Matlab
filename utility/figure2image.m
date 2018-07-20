@@ -41,6 +41,7 @@ hFigure.PaperUnits = 'inches';
 hFigure.PaperPosition = ...
     ([0 0 imageWidth imageHeight]+[0 0 2 2].*croppingBuffer) / ...
     resolutionDPI;
+hFigure.InvertHardcopy = 'off';
 
 % Set properties of all axes.
 nAxes = numel(hFigure.Children);
