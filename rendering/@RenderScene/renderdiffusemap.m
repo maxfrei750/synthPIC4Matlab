@@ -26,6 +26,7 @@ draw_sem(mesh);
 
 % Set light properties.
 material dull
+lighting(obj.lighting);
 hLight = light;
 hLight.Position = obj.detectorPosition;
 
