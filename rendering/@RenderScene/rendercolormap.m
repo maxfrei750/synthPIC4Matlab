@@ -8,14 +8,11 @@ if ~isempty(obj.colorMap)
     return
 end
 
-%% Set parameters.
-baseColor = ones(1,3)*0;
-
 %% Render the geometry.
 % Set figure properties.
 hFigure = figure;
 hFigure.Visible = 'off';
-hFigure.Color = baseColor;
+hFigure.Color = obj.backgroundColor;
 
 % Draw the current geometry.
 draw_sem(obj.mesh);
