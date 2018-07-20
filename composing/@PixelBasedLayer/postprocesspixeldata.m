@@ -7,6 +7,11 @@ if isgpuavailable
     pixelData = gpuArray(pixelData);
 end
 
+% Apply inversion
+if obj.inverted
+    pixelData = 1-pixelData;
+end
+
 % Apply strength.
 pixelData = pixelData*obj.strength;
 
@@ -21,13 +26,8 @@ if obj.blurStrength > 0
     pixelData = imgaussfilt(pixelData,obj.blurStrength);
 end
 
-% Apply inversion
-if obj.inverted
-    pixelData = 1-pixelData;
-end
-
-% Apply mask.
-pixelData = pixelData.*obj.mask;
+% % Apply mask.
+% pixelData = pixelData.*obj.mask;
 
 
 end
