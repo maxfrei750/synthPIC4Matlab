@@ -1,9 +1,0 @@
-[submodule "external/gptoolbox"]
-	path = external/gptoolbox
-	url = https://github.com/alecjacobson/gptoolbox
-[submodule "external/MATLAB-GJK-Collision-Detection"]
-	path = external/MATLAB-GJK-Collision-Detection
-	url = https://github.com/mws262/MATLAB-GJK-Collision-Detection
-[submodule "external/ParforProgMon"]
-	path = external/ParforProgMon
-	url = https://github.com/DylanMuir/ParforProgMon
