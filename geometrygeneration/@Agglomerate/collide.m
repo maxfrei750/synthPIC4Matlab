@@ -33,7 +33,7 @@ isValidRandomness = @(x) ...
     (x <= 1) && ...
     isscalar(x);
 
-isValidPlot = @(x) any(validatestring(x,{'on','off','rotation'}));
+isValidPlot = @(x) any(validatestring(x,{'on','off','rotation','rotate'}));
 
 addRequired(p,'obj_A',isValidAgglomerate);
 addRequired(p,'obj_B',isValidAgglomerate);
@@ -56,7 +56,7 @@ switch lower(p.Results.plot)
     case 'off'
         doPlot = false;
         doPlotRotation = false;
-    case 'rotation'
+    case {'rotation','rotate'}
         doPlot = true;
         doPlotRotation = true;
 end
