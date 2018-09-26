@@ -152,12 +152,6 @@ end
 translationVector = -translationVector;
 obj_B = obj_B.translate(translationVector);
 
-% Plot the collision.
-if doPlot
-    plotcollision(obj_A,obj_B,doPlotRotation)
-    pause(0.1)
-end
-
 %% Make obj_B a child of obj_A.
 obj_C = obj_A.addchild(obj_B);
 
