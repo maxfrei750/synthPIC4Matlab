@@ -49,7 +49,7 @@ if ~islit
 end
 
 daspect([1 1 1])
-view(3)
+%view(3)
 material dull
 
 %% If no outputargument was requested, then clear hPatch.
