@@ -15,15 +15,18 @@ validateattributes( ...
 cla
 
 % Draw objects.
-obj_A.draw
-obj_B.draw
+hObjA = obj_A.draw;
+hObjA.EdgeColor = 'none';
+
+hObjB = obj_B.draw;
+hObjB.EdgeColor = 'none';
 
 % Update figure
 drawnow
 
 if doRotate
     % Rotate axis.
-    view(get(gca,'View')+[1 0]);
+    view(get(gca,'View')+[3 0]);
 end
 end
 
