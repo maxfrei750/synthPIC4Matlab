@@ -145,11 +145,6 @@ if doRewind
         obj_B = obj_B.translate(translationVector);
         totalTranslationVector = totalTranslationVector+translationVector;
         
-        % Plot the collision.
-        if doPlot
-            plotcollision(obj_A,obj_B,doPlotRotation)
-            pause(0.1)
-        end
     end
 end
 
