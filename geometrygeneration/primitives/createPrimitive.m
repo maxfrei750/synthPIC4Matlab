@@ -130,7 +130,7 @@ switch obj.type
     case 'pyramid'
         % ...
     case 'prism'
-        primitive = createPrism(nSidesBase,lengthArray(1),lengthArray(2));
+        primitive = createPrism(obj.nSidesBase,lengthArray(1),lengthArray(2));
         
     case 'cuboid' % 3 lengths
         primitive = createCube;
