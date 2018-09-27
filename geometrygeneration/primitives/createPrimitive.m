@@ -118,7 +118,7 @@ switch obj.type
         primitive.vertices = primitive.vertices*0.25;
         
     case 'cylinder' % 2 lengths
-        primitive = createPrism(36,lengthArray(1),lengthArray(2));
+        primitive = createPrism(72,lengthArray(1),lengthArray(2));
     case 'roundedcylinder'
         primitive = createRoundedCylinder(lengthArray(1),lengthArray(2));
     case 'floor'
