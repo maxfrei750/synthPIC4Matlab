@@ -26,7 +26,7 @@ drawnow
 
 if doRotate
     % Rotate axis.
-    view(get(gca,'View')+[3 0]);
+    view(get(gca,'View')+[1 0]);
 end
 end
 
