@@ -2,6 +2,7 @@ function occlusionMap = renderocclusionmap(obj)
 %RENDEROCCLUSIONMAP Summary of this function goes here
 %   Detailed explanation goes here
 
+
 % If map was already rendered, then return the already rendered map.
 if ~isempty(obj.occlusionMap)
     occlusionMap = obj.occlusionMap;
@@ -29,9 +30,12 @@ hPatch.EdgeColor = 'none';
 hPatch.FaceColor = 'flat';
 hPatch.FaceLighting = 'none';
 
-customColorMap = gray(mesh.nObjects+1);
-customColorMap(end,:) = [];
+%customColorMap = gray(mesh.nObjects+1);
+%customColorMap(end,:) = [];
 
+% assert(mesh.nObjects
+
+customColorMap = repmat(254:-1:(255-mesh.nObjects),3,1)'./255;
 colormap(customColorMap);
 
 % Convert figure to image.
