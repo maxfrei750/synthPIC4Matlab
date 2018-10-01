@@ -28,7 +28,7 @@ if ~isempty(obj.displacementLayers)
 end
 
 % Rotate geometry randomly.
-geometry.rotationAxisDirection = randd([0 1],1,3);
+geometry.rotationAxisDirection = normalizeVector3d(randn(1,3));
 geometry.rotationAngleDegree = randd([0 360]);
 
 particle = Agglomerate;
