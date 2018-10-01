@@ -44,6 +44,8 @@ else
     hPatch.FaceLighting = 'phong';
 end
 
+hPatch.EdgeColor = 'none';
+
 if ~islit
      light
 end
