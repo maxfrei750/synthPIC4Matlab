@@ -1,11 +1,10 @@
-function occlusionMap = renderocclusionmap(obj)
-%RENDEROCCLUSIONMAP Summary of this function goes here
+function objectIdMap = renderobjectidmap(obj)
+%RENDEROBJECTIDMAP Summary of this function goes here
 %   Detailed explanation goes here
 
-
 % If map was already rendered, then return the already rendered map.
-if ~isempty(obj.occlusionMap)
-    occlusionMap = obj.occlusionMap;
+if ~isempty(obj.objectIdMap)
+    objectIdMap = obj.objectIdMap;
     return
 end
 
@@ -30,16 +29,13 @@ hPatch.EdgeColor = 'none';
 hPatch.FaceColor = 'flat';
 hPatch.FaceLighting = 'none';
 
-%customColorMap = gray(mesh.nObjects+1);
-%customColorMap(end,:) = [];
-
 % assert(mesh.nObjects
 
 customColorMap = repmat(254:-1:(255-mesh.nObjects),3,1)'./255;
 colormap(customColorMap);
 
 % Convert figure to image.
-occlusionMap = figure2image(hFigure,obj.imageSize);
+objectIdMap = figure2image(hFigure,obj.imageSize);
 
 % Close figure.
 close(hFigure);
@@ -50,21 +46,21 @@ opengl hardware
 warning('on','MATLAB:opengl:unableToSelectHWGL');
 
 % Remove redundant color channels.
-occlusionMap = occlusionMap(:,:,1);
-occlusionMap = im2double(occlusionMap);
+objectIdMap = objectIdMap(:,:,1);
+objectIdMap = im2double(objectIdMap);
 
 % Flip diffuse map.
-occlusionMap = flipud(occlusionMap);
+objectIdMap = flipud(objectIdMap);
 
 % Invert objectmask.
-occlusionMap = imcomplement(occlusionMap);
+objectIdMap = imcomplement(objectIdMap);
 
 %% Push data to gpu, if one is available.
 if isgpuavailable
-    occlusionMap = gpuArray(occlusionMap);
+    objectIdMap = gpuArray(objectIdMap);
 end
 
 %% Assign the associated ...Map-attribute of the object.
-obj.occlusionMap = occlusionMap;
+obj.objectIdMap = objectIdMap;
 end
 

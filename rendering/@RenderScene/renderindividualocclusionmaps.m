@@ -8,11 +8,11 @@ if ~isempty(obj.individualOcclusionMaps)
     return
 end
 
-% Get complete occlusion map.
-completeOcclusionMap = obj.renderocclusionmap;
+% Get objectIdMap.
+objectIdMap = obj.renderobjectidmap;
 
 % Identify unique colors.
-colors = unique(completeOcclusionMap);
+colors = unique(objectIdMap);
 
 % Remove black from the list of colors, because that's the background.
 colors(colors==0) = [];
@@ -25,7 +25,7 @@ individualOcclusionMaps = cell(nColors,1);
 % Iterate all colors.
 for iColor = 1:nColors
     color = colors(iColor);
-    individualOcclusionMaps{iColor} = completeOcclusionMap == color;
+    individualOcclusionMaps{iColor} = objectIdMap == color;
 end
 
 %% Assign the associated ...Map-attribute of the object.
