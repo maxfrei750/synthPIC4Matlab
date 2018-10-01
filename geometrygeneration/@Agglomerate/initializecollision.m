@@ -26,7 +26,9 @@ translationVector = randomPoint_A_0-randomPoint_B_0;
 obj_B = obj_B.translate(translationVector);
 
 %% Calculate collision direction.
-collisionDirection = normalizeVector3d(obj_A.centroid-obj_B.centroid);
+
+% Use a random direction as collision direction.
+collisionDirection = normalizeVector3d(randn(1,3));
 
 % %% Visualisation
 % randomPoint_A = randomPoint_A_0;
