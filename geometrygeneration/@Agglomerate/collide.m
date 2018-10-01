@@ -89,6 +89,9 @@ space = obj_A.boundingBox;
 space = space.enlarge(obj_B.boundingBox.dimensions);
 space = space.enlarge(-obj_B.boundingBox.dimensions);
 
+% Store original position of obj_B, so it can easily be reset later on.
+originalPosition_B = obj_B.centroid;
+
 %% Perform the actual collision.
 totalTranslationVector =  zeros(1,3);
 doRewind = false;
@@ -100,6 +103,22 @@ translationVector = translationDirection*speed;
 % Move forward until you collide.
 while not(isoverlapping(obj_A,obj_B))
     
+    % Reset collsiison and reroll translation direction occasionally to 
+    % avoid infinite loops.
+    if any(abs(totalTranslationVector)>space.boundingBox.dimensions)
+        % Reset the position of obj_B.
+        offset = obj_B.centroid-originalPosition_B;
+        obj_B = obj_B.translate(-offset);
+        
+        totalTranslationVector =  zeros(1,3);
+        
+        % Roll a new translation direction.
+        translationDirection_straight = normalizeVector3d(randn(1,3));
+        translationDirection = translationDirection_straight;
+        translationVector = translationDirection*speed;
+    end
+    
+    % Apply periodic boundaries.
     obj_B = applyperiodicboundaries(obj_B,space);
     
     if doRandomWalk
