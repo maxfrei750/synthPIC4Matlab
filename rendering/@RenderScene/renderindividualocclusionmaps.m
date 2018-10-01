@@ -11,21 +11,16 @@ end
 % Get objectIdMap.
 objectIdMap = obj.renderobjectidmap;
 
-% Identify unique colors.
-colors = unique(objectIdMap);
+% Get visible object IDs.
+visibleObjectIDs = obj.visibleObjectIDs;
+nMaps = numel(visibleObjectIDs);
 
-% Remove black from the list of colors, because that's the background.
-colors(colors==0) = [];
+individualOcclusionMaps = cell(nMaps,1);
 
-% Get number of colors.
-nColors = numel(colors);
-
-individualOcclusionMaps = cell(nColors,1);
-
-% Iterate all colors.
-for iColor = 1:nColors
-    color = colors(iColor);
-    individualOcclusionMaps{iColor} = objectIdMap == color;
+% Iterate all visible ObjectIDs.
+for iMap = 1:nMaps
+    objectID = visibleObjectIDs(iMap);
+    individualOcclusionMaps{iMap} = objectIdMap == objectID;
 end
 
 %% Assign the associated ...Map-attribute of the object.
