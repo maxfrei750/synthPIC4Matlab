@@ -1,7 +1,23 @@
 function isOverlapping = isoverlapping(obj_A,obj_B)
-%ISOVERLAPPING Summary of this function goes here
-%   Detailed explanation goes here
+%ISOVERLAPPING Checks if any primary particles of two agglomerates
+%intersect.
 
+% Precheck: If the convex hulls of the agglomerates don't
+% intersect, then none of their primary particles can intersect.
+
+% The function detectmeshcollision assumes convex hulls anyhow. So we can 
+% just use it on the completeMeshes of the agglomerates.
+isOverlappingConvexHulls = detectmeshcollision( ...
+    obj_A.completeMesh, ...
+    obj_B.completeMesh);
+
+if not(isOverlappingConvexHulls)
+    isOverlapping = false;
+    return
+end
+
+% If the convex hulls of the agglomerates don't intersect, then we need to
+% check all possible pairs of primary particles for intesections.
 primaryParticles_A = obj_A.primaryParticles;
 primaryParticles_B = obj_B.primaryParticles;
 
