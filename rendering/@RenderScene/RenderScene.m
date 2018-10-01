@@ -7,6 +7,10 @@ classdef RenderScene < handle
         relativeResolution = 0.5
     end
     
+    properties(Dependent=true)
+        visibleObjectIDs
+    end
+    
     properties(SetAccess = private)
         mesh
         imageSize
@@ -105,6 +109,16 @@ classdef RenderScene < handle
             obj.boundingBoxes = mesh.subBoundingBoxes2d;
             obj.masks = mesh.subMasks;
         end       
+        
+        %% Getters
+        function visibleObjectIDs = get.visibleObjectIDs(obj)
+            objectIDMap = gather(obj.renderobjectidmap);
+            
+            visibleObjectIDs = unique(objectIDMap);
+            
+            % Remove background Id.
+            visibleObjectIDs(visibleObjectIDs == 0) = [];
+        end
     end
 end
 
