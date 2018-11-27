@@ -5,14 +5,16 @@ function setupMIST4Matlab
 subPathList = {
     fullfile('composing')
     fullfile('external')
+    fullfile('external','geom3d','meshes3d')
+    fullfile('external','geom3d','geom3d')
     fullfile('external','gptoolbox','external')
     fullfile('external','gptoolbox','external','matlabPyrTools')
     fullfile('external','gptoolbox','mesh')
     fullfile('external','MATLAB-GJK-Collision-Detection')
+    fullfile('external','Mesh_voxelisation')    
     fullfile('external','ParforProgMon')
     fullfile('external','Hardware accelerated ray-triangle intersection')
-    fullfile('external','geom3d','meshes3d')
-    fullfile('external','geom3d','geom3d')
+
     fullfile('geometrygeneration')
     fullfile('geometrygeneration','primitives')
     fullfile('rendering')
