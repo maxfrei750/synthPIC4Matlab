@@ -21,5 +21,6 @@ obj1.facesObjectIDs = ...
     [obj1.facesObjectIDs;obj2.facesObjectIDs+obj1.nObjects];
 obj1.texture = [obj1.texture;obj2.texture];
 obj1.vertices = [obj1.vertices;obj2.vertices];
+obj1.particleTypeList = [obj1.particleTypeList;obj2.particleTypeList];
 
 end
