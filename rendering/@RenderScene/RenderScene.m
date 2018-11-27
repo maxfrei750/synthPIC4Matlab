@@ -9,6 +9,7 @@ classdef RenderScene < handle
     
     properties(Dependent=true)
         visibleObjectIDs
+        visibleObjectTypeList
     end
     
     properties(SetAccess = private)
@@ -118,6 +119,11 @@ classdef RenderScene < handle
             
             % Remove background Id.
             visibleObjectIDs(visibleObjectIDs == 0) = [];
+        end
+        
+        function visibleObjectTypeList = get.visibleObjectTypeList(obj)
+            objectTypeList = obj.mesh.particleTypeList;
+            visibleObjectTypeList = objectTypeList(obj.visibleObjectIDs);
         end
     end
 end
