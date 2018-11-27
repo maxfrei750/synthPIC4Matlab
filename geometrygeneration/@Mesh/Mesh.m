@@ -4,6 +4,7 @@ classdef Mesh
     
     properties
         texture
+        particleTypeList
     end
     
     properties(SetAccess = private)
@@ -112,6 +113,23 @@ classdef Mesh
             
             % Assign property.
             obj.texture = value;
+        end
+        
+        function obj = set.particleTypeList(obj,value)  
+            
+            % If particleTypeList is a char vector, convert it to
+            % categorical.
+            if ischar(value) && isvector(value)
+                value = categorical(cellstr(lower(value)));
+            end
+            
+            % Validate the input.
+            validateattributes( ...
+                value, ...
+                {'categorical'}, ...
+                {'vector'});
+            
+            obj.particleTypeList = value;
         end
         
         %% Getter-methods
