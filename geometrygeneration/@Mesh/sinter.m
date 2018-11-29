@@ -18,12 +18,11 @@ tempFaces = obj.faces;
 
 % [tempVertices,tempFaces] = outer_hull(tempVertices,tempFaces);
 [tempVertices,tempFaces] = outer_hull(tempVertices,tempFaces);
-sinterMultiplier = 1;
 
 for iSinterStep = 1:nSinterSteps
     % Get curvatures of vertices.
-     c = discrete_gaussian_curvature(tempVertices,tempFaces);
-    %c = meshVertexCurvature(vertices,faces);
+    c = discrete_gaussian_curvature(tempVertices,tempFaces);
+    
     % Clip and invert vertex curvatures.
     c = -clip(c,-inf,0);
     
@@ -31,7 +30,7 @@ for iSinterStep = 1:nSinterSteps
     n = per_vertex_normals(tempVertices,tempFaces);
     
     % Calculate sintering offsets.
-    offsets = n.*c*sinterMultiplier;
+    offsets = n.*c;
     
     % Apply offset.
     tempVertices = tempVertices+offsets;
