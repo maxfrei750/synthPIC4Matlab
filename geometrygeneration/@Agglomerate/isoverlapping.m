@@ -1,4 +1,5 @@
-function isOverlapping = isoverlapping(obj_A,obj_B)
+function [isOverlapping,iPrimaryParticle_A,iPrimaryParticle_B] = ...
+    isoverlapping(obj_A,obj_B)
 %ISOVERLAPPING Checks if any primary particles of two agglomerates
 %intersect.
 
@@ -13,6 +14,9 @@ isOverlappingConvexHulls = detectmeshcollision( ...
 
 if not(isOverlappingConvexHulls)
     isOverlapping = false;
+    iPrimaryParticle_A = NaN;
+    iPrimaryParticle_B = NaN;
+    
     return
 end
 
