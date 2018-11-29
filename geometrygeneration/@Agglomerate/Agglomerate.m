@@ -8,6 +8,7 @@ classdef Agglomerate < matlab.mixin.Copyable
         fractions = Fraction.empty
         agglomerationMode
         agglomerationSpeed
+        sinterRatio
         
         randomSeed
     end
@@ -49,11 +50,10 @@ classdef Agglomerate < matlab.mixin.Copyable
             
             isValidFractionList  = @(x) isa(x,'Fraction') && isvector(x);
             
-            isPositiveRealScalarNumber = @(x) ...
-                isscalar(x) && ...
-                x>0 && ...
-                ~isnan(x) && ...
-                isreal(x);
+            isValidNParticles = @(x) validateattributes( ...
+                x, ...
+                {'numeric'}, ...
+                {'real','finite','nonnan','nonsparse','nonempty','positive','integer','scalar'});
             
             % If no random seed was specified, then keep the current random
             % seed.
@@ -62,9 +62,10 @@ classdef Agglomerate < matlab.mixin.Copyable
             
             addRequired(p,'agglomerationType',isValidAgglomerationType);
             addRequired(p,'fractionArray',isValidFractionList);
-            addRequired(p,'nParticles',isPositiveRealScalarNumber);
-            addParameter(p,'agglomerationSpeed',10,isPositiveRealScalarNumber);
+            addRequired(p,'nParticles',isValidNParticles);
+            addParameter(p,'agglomerationSpeed'); % Checked in collide-function.
             addParameter(p,'randomSeed',defaultRandomSeed);
+            addParameter(p,'sinterRatio'); % Checked in collide-function.
             
             parse(p,agglomerationMode,fractions,nParticles,varargin{:});
             
@@ -72,14 +73,13 @@ classdef Agglomerate < matlab.mixin.Copyable
             obj.fractions = fractions;
             obj.agglomerationSpeed = p.Results.agglomerationSpeed;
             obj.randomSeed = p.Results.randomSeed;
+            obj.sinterRatio = p.Results.sinterRatio;
             
             % Set seed of the random number generator.
             rng(obj.randomSeed);
             
             % Create the particle list.
             particleList = createparticlelist(fractions,nParticles);
-            
-%             obj.childList(1) = particleList(1).copy;
             
             % Distinguish the different agglomeration mechanisms.
             switch obj.agglomerationMode
