@@ -168,7 +168,7 @@ if doRewind
     translationVector = -normalizeVector3d(translationVector);
     
     % Rewind, until there is no more overlap.
-    while isoverlapping(obj_A,obj_B);
+    while isoverlapping(obj_A,obj_B)
         % Perform the translation.
         obj_B = obj_B.translate(translationVector);
         totalTranslationVector = totalTranslationVector+translationVector;
