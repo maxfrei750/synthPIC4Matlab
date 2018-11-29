@@ -14,7 +14,7 @@ function obj_C = collide(obj_A,obj_B,varargin)
 %                     Default: 0
 %
 %   'sinterratio' -   Amount of sintering to apply. Can have values from 0
-%                     (no sintering) to 1 completely sintered.
+%                     (no sintering) to 1 (completely sintered).
 %                     Default: 0
 %
 %   'plot'        -   Defines how to plot the agglomeration. 
