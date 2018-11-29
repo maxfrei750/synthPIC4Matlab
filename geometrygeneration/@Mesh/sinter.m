@@ -16,8 +16,8 @@ end
 tempVertices = obj.vertices;
 tempFaces = obj.faces;
 
+% [tempVertices,tempFaces] = outer_hull(tempVertices,tempFaces);
 [tempVertices,tempFaces] = outer_hull(tempVertices,tempFaces);
-
 sinterMultiplier = 1;
 
 for iSinterStep = 1:nSinterSteps
@@ -36,10 +36,6 @@ for iSinterStep = 1:nSinterSteps
     % Apply offset.
     tempVertices = tempVertices+offsets;
 end
-
-% Smooth mesh
-smoothingSteps = round(nSinterSteps/5)+3; %Empirical
-[tempVertices,tempFaces] = smoothMesh(tempVertices,tempFaces,smoothingSteps);
 
 % Fix scale.
 tempDimensions = range(tempVertices);
