@@ -39,6 +39,9 @@ classdef Geometry < handle
             
             % Backup the mesh of the primitive.
             obj.primitiveMesh = Mesh(primitive.vertices,primitive.faces);
+                
+            % Set type of the primitiveMesh.
+            obj.primitiveMesh.particleTypeList = type;
             
             % Basic input parsing to assign properties. Detailed parsing
             % and error handling is done in the createPrimitive function.
@@ -86,6 +89,9 @@ classdef Geometry < handle
             
             % Set texture of the meshObject.
             meshObject.texture = ones(meshObject.nVertices,3)*obj.color;
+            
+            % Set type of the meshObject.
+            meshObject.particleTypeList = obj.type;
         end
         
         %% Setter methods
