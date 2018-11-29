@@ -4,19 +4,29 @@ function obj_C = collide(obj_A,obj_B,varargin)
 %
 %   Parameters:
 %   ===========
-%   'speed'     -   Distance that mesh_B moves during each iteration of the
-%                   collision simulation.
-%                   Default: 10
+%   'speed'       -   Distance that mesh_B moves during each iteration of the
+%                     collision simulation.
+%                     Default: 10
 %
-%   'randomness'-   Degree of randomness of the movement of mesh_B during
-%                   the collision. Can have values between 0 (ballistic)
-%                   and 1 (pure random walk).
-%                   Default: 0
+%   'randomness'  -   Degree of randomness of the movement of mesh_B during
+%                     the collision. Can have values between 0 (ballistic)
+%                     and 1 (pure random walk).
+%                     Default: 0
+%
+%   'sinterratio' -   Amount of sintering to apply. Can have values from 0
+%                     (no sintering) to 1 completely sintered.
+%                     Default: 0
+%
+%   'plot'        -   Defines how to plot the agglomeration. 
+%                     Possible values: 'on','off','rotation','rotate'
+%                     Default: 'off'
 
 
 %% Default values
 defaultSpeed = 10;
 defaultRandomness = 0;
+defaultSinterRatio = 0;
+defaultPlot = 'off';
 
 %% Parse input parameters.
 p = inputParser;
@@ -33,20 +43,28 @@ isValidRandomness = @(x) ...
     (x <= 1) && ...
     isscalar(x);
 
+isValidSinterRatio = @(x) validateattributes( ...
+    x, ...
+    {'numeric'}, ...
+    {'real','finite','nonnan','nonsparse','nonempty','scalar','>=',0,'<=',1});
+
 isValidPlot = @(x) any(validatestring(x,{'on','off','rotation','rotate'}));
 
 addRequired(p,'obj_A',isValidAgglomerate);
 addRequired(p,'obj_B',isValidAgglomerate);
 addParameter(p,'speed',defaultSpeed,isValidSpeed);
 addParameter(p,'randomness',defaultRandomness,isValidRandomness);
-addParameter(p,'plot','off',isValidPlot);
+addParameter(p,'plot',defaultPlot,isValidPlot);
+addParameter(p,'sinterRatio',defaultSinterRatio,isValidSinterRatio);
 
 parse(p,obj_A,obj_B,varargin{:});
 
 speed = p.Results.speed;
 randomness = p.Results.randomness;
+sinterRatio = p.Results.sinterRatio;
 
 doRandomWalk = (randomness > 0);
+doSinter = (sinterRatio > 0);
 
 % Plot options
 switch lower(p.Results.plot)
@@ -72,16 +90,7 @@ if obj_A == obj_B
     error('Objects cannot be collided with themselves.');
 end
 
-% if obj_A == obj_B
-%     obj_B = copy(obj_A);
-% end
-
 %% Intialize the collision.
-
-% % Make copies of obj_A and obj_B.
-% obj_A = copy(obj_A);
-% obj_B = copy(obj_B);
-
 collisionDirection = initializecollision(obj_A,obj_B);
 
 % Set up a bounding box as periodic boundaries.
@@ -159,11 +168,10 @@ if doRewind
     translationVector = -normalizeVector3d(translationVector);
     
     % Rewind, until there is no more overlap.
-    while isoverlapping(obj_A,obj_B)
+    while isoverlapping(obj_A,obj_B);
         % Perform the translation.
         obj_B = obj_B.translate(translationVector);
         totalTranslationVector = totalTranslationVector+translationVector;
-        
     end
 end
 
@@ -171,6 +179,22 @@ end
 translationVector = -translationVector;
 obj_B = obj_B.translate(translationVector);
 
+% Simulate Sintering
+
+% Get overlapping particles
+if doSinter
+    [~,iPrimaryParticle_A,iPrimaryParticle_B] = isoverlapping(obj_A,obj_B);
+    
+    primaryParticle_A = obj_A.primaryParticles(iPrimaryParticle_A);
+    primaryParticle_B = obj_B.primaryParticles(iPrimaryParticle_B);
+    
+    sinterVector = ...
+        (primaryParticle_A.centroid-primaryParticle_B.centroid)*...
+        sinterRatio;
+    
+    obj_B = obj_B.translate(sinterVector);
+end
+    
 %% Make obj_B a child of obj_A.
 obj_C = obj_A.addchild(obj_B);
 
