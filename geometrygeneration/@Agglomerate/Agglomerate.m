@@ -60,12 +60,15 @@ classdef Agglomerate < matlab.mixin.Copyable
             currentRandomNumberGenerator = rng;
             defaultRandomSeed = currentRandomNumberGenerator.Seed;
             
+            defaultAgglomerationSpeed = 10;
+            defaultSinterRatio = 0;
+            
             addRequired(p,'agglomerationType',isValidAgglomerationType);
             addRequired(p,'fractionArray',isValidFractionList);
             addRequired(p,'nParticles',isValidNParticles);
-            addParameter(p,'agglomerationSpeed'); % Checked in collide-function.
+            addParameter(p,'agglomerationSpeed',defaultAgglomerationSpeed); % Checked in collide-function.
             addParameter(p,'randomSeed',defaultRandomSeed);
-            addParameter(p,'sinterRatio'); % Checked in collide-function.
+            addParameter(p,'sinterRatio',defaultSinterRatio); % Checked in collide-function.
             
             parse(p,agglomerationMode,fractions,nParticles,varargin{:});
             
