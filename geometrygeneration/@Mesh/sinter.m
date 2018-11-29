@@ -1,35 +1,50 @@
-function obj = sinter(obj,sinterParameter)
+function obj = sinter(obj,nSinterSteps)
 %SINTER Summary of this function goes here
 %   Detailed explanation goes here
 
 % Validate input.
 validateattributes( ...
-    sinterParameter, ...
+    nSinterSteps, ...
     {'numeric'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar','integer','>=',0});
 
-resolution = 0.1;
+% If nSinterSteps is zero, then there's nothing to do.
+if nSinterSteps == 0
+    return;
+end
 
-nSteps_x = round(obj.boundingBox.dimensions(1)*resolution);
-nSteps_y = round(obj.boundingBox.dimensions(2)*resolution);
-nSteps_z = round(obj.boundingBox.dimensions(3)*resolution);
+tempVertices = obj.vertices;
+tempFaces = obj.faces;
 
-voxels = VOXELISE(nSteps_x,nSteps_y,nSteps_z,obj.tostruct);
-voxels = padarray(voxels,[1 1 1],0);
+[tempVertices,tempFaces] = outer_hull(tempVertices,tempFaces);
 
-% Fix orientation.
-voxels = rot90(voxels);
-voxels = flip(voxels,1);
+sinterMultiplier = 1;
 
-[tempFaces, tempVertices] = isosurface(voxels, 0.1);
+for iSinterStep = 1:nSinterSteps
+    % Get curvatures of vertices.
+     c = discrete_gaussian_curvature(tempVertices,tempFaces);
+    %c = meshVertexCurvature(vertices,faces);
+    % Clip and invert vertex curvatures.
+    c = -clip(c,-inf,0);
+    
+    % Get vertexnormals.
+    n = per_vertex_normals(tempVertices,tempFaces);
+    
+    % Calculate sintering offsets.
+    offsets = n.*c*sinterMultiplier;
+    
+    % Apply offset.
+    tempVertices = tempVertices+offsets;
+end
+
+% Smooth mesh
+smoothingSteps = round(nSinterSteps/5)+3; %Empirical
+[tempVertices,tempFaces] = smoothMesh(tempVertices,tempFaces,smoothingSteps);
 
 % Fix scale.
 tempDimensions = range(tempVertices);
 tempScale = tempDimensions./obj.boundingBox.dimensions;
 tempVertices = tempVertices./tempScale;
-
-% Simulate sintering.
-[tempVertices, tempFaces] = smoothMesh(tempVertices,tempFaces,sinterParameter);
 
 % Create a new mesh.
 sinteredMesh = Mesh(tempVertices,tempFaces);
