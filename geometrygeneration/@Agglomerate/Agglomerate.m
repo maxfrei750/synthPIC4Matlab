@@ -16,6 +16,7 @@ classdef Agglomerate < matlab.mixin.Copyable
         agglomerationSpeed
         sinterRatio
         collisionProxy
+        collisionDirectionConstraint
         
         randomSeed
     end
@@ -66,6 +67,11 @@ classdef Agglomerate < matlab.mixin.Copyable
             isValidCollisionProxy = ...
                 @(x) any(validatestring(x,expectedCollisionProxies));
             
+            isValidCollisionDirectionConstraint = @(x) validateattributes( ...
+                x, ...
+                {'numeric'}, ...
+                {'real','finite','nonnan','nonsparse','nonempty','vector','numel',3});
+            
             % If no random seed was specified, then keep the current random
             % seed.
             currentRandomNumberGenerator = rng;
@@ -74,6 +80,7 @@ classdef Agglomerate < matlab.mixin.Copyable
             defaultAgglomerationSpeed = 10;
             defaultSinterRatio = 0;
             defaultCollisionProxy = 'none';
+            defaultCollisionDirectionConstraint = [1 1 1];
             
             addRequired(p,'agglomerationType',isValidAgglomerationType);
             addRequired(p,'fractionArray',isValidFractionList);
@@ -82,6 +89,7 @@ classdef Agglomerate < matlab.mixin.Copyable
             addParameter(p,'randomSeed',defaultRandomSeed);
             addParameter(p,'sinterRatio',defaultSinterRatio); % Checked in collide-function.
             addParameter(p,'collisionProxy',defaultCollisionProxy,isValidCollisionProxy);
+            addParameter(p,'collisionDirectionConstraint',defaultCollisionDirectionConstraint,isValidCollisionDirectionConstraint);
             
             parse(p,agglomerationMode,fractions,nParticles,varargin{:});
             
@@ -91,6 +99,7 @@ classdef Agglomerate < matlab.mixin.Copyable
             obj.randomSeed = p.Results.randomSeed;
             obj.sinterRatio = p.Results.sinterRatio;
             obj.collisionProxy = lower(p.Results.collisionProxy);
+            obj.collisionDirectionConstraint = p.Results.collisionDirectionConstraint;
             
             % Set seed of the random number generator.
             rng(obj.randomSeed);
@@ -98,9 +107,12 @@ classdef Agglomerate < matlab.mixin.Copyable
             % Create the particle list.
             particleList = createparticlelist(fractions,nParticles);
             
-            % Assign the collisionProx attribute of the agglomerate to all
-            % particles.
+            % Pass the relevant attributes of the agglomerate to all of 
+            % it's future children.
             [particleList(:).collisionProxy] = deal(obj.collisionProxy);
+            
+            [particleList(:).collisionDirectionConstraint] ...
+                = deal(obj.collisionDirectionConstraint);
             
             % Distinguish the different agglomeration mechanisms.
             switch obj.agglomerationMode

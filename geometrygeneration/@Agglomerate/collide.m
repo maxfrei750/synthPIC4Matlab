@@ -90,7 +90,18 @@ if obj_A == obj_B
 end
 
 %% Intialize the collision.
-collisionDirection = initializecollision(obj_A,obj_B);
+% Determine the collisionDirectionConstraint.
+if not(isequal(obj_A.collisionDirectionConstraint,obj_B.collisionDirectionConstraint))
+    warning('collisionDirectionConstraints of A and B are not equal. Using [1 1 1].');
+    collisionDirectionConstraint = normalizeVector3d([1 1 1]);
+else
+    collisionDirectionConstraint = ...
+        normalizeVector3d(obj_A.collisionDirectionConstraint);
+end
+
+% Determine the collisiondirection and position obj_B.
+[collisionDirection,obj_B] = ...
+    initializecollision(obj_A,obj_B,collisionDirectionConstraint);
 
 % Set up a bounding box as periodic boundaries.
 space = obj_A.boundingBox;
@@ -123,7 +134,6 @@ while not(isoverlapping(obj_A,obj_B))
         % Roll a new translation direction.
         translationDirection_straight = normalizeVector3d(randn(1,3));
         translationDirection = translationDirection_straight;
-        translationVector = translationDirection*speed;
     end
     
     % Apply periodic boundaries.
@@ -141,13 +151,15 @@ while not(isoverlapping(obj_A,obj_B))
         translationDirection = ...
             (1-randomness)*translationDirection_straight + ...
             randomness*translationDirection_random;
-        
-        % Normalize translation direction vector.
-        translationDirection = normalizeVector3d(translationDirection);
-        
-        translationVector = translationDirection*speed;
     end
     
+    % Apply collision direction constraint:
+    translationDirection = translationDirection.*collisionDirectionConstraint;
+    
+    % Normalize translation direction vector.
+    translationDirection = normalizeVector3d(translationDirection);
+    translationVector = translationDirection*speed;
+  
     % Perform the translation.
     obj_B = obj_B.translate(translationVector);
     
