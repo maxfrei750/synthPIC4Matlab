@@ -4,23 +4,22 @@ function obj_C = collide(obj_A,obj_B,varargin)
 %
 %   Parameters:
 %   ===========
-%   'speed'       -   Distance that mesh_B moves during each iteration of the
-%                     collision simulation.
-%                     Default: 10
+%   'speed' - Distance that mesh_B moves during each iteration of the 
+%             collision simulation.
+%             Default: 10
 %
-%   'randomness'  -   Degree of randomness of the movement of mesh_B during
-%                     the collision. Can have values between 0 (ballistic)
-%                     and 1 (pure random walk).
-%                     Default: 0
+%   'randomness' - Degree of randomness of the movement of mesh_B during
+%                  the collision. Can have values between 0 (ballistic)
+%                  and 1 (pure random walk).
+%                  Default: 0
 %
-%   'sinterratio' -   Amount of sintering to apply. Can have values from 0
-%                     (no sintering) to 1 (completely sintered).
-%                     Default: 0
+%   'sinterratio' - Amount of sintering to apply. Can have values from 0
+%                   (no sintering) to 1 (completely sintered).
+%                   Default: 0
 %
-%   'plot'        -   Defines how to plot the agglomeration. 
-%                     Possible values: 'on','off','rotation','rotate'
-%                     Default: 'off'
-
+%   'plot' - Defines how to plot the agglomeration. 
+%            Possible values: 'on','off','rotation','rotate'
+%            Default: 'off'
 
 %% Default values
 defaultSpeed = 10;
