@@ -1,6 +1,12 @@
 classdef Agglomerate < matlab.mixin.Copyable
-    %AGGLOMERATE Summary of this class goes here
-    %   Detailed explanation goes here
+    %AGGLOMERATE
+    
+    % Settable properties:
+    % ====================
+    %   'collisionProxy' - Defines if a proxy (cube or sphere) shall be 
+    %                      used for collision detection, to speed it up.
+    %                      Possible values: 'none', 'sphere', 'box'
+    %                      Default: 'none'
     
     properties
         mesh = Mesh.empty;
@@ -9,6 +15,7 @@ classdef Agglomerate < matlab.mixin.Copyable
         agglomerationMode
         agglomerationSpeed
         sinterRatio
+        collisionProxy
         
         randomSeed
     end
@@ -55,6 +62,10 @@ classdef Agglomerate < matlab.mixin.Copyable
                 {'numeric'}, ...
                 {'real','finite','nonnan','nonsparse','nonempty','positive','integer','scalar'});
             
+            expectedCollisionProxies = {'none','box','sphere'};
+            isValidCollisionProxy = ...
+                @(x) any(validatestring(x,expectedCollisionProxies));
+            
             % If no random seed was specified, then keep the current random
             % seed.
             currentRandomNumberGenerator = rng;
@@ -62,6 +73,7 @@ classdef Agglomerate < matlab.mixin.Copyable
             
             defaultAgglomerationSpeed = 10;
             defaultSinterRatio = 0;
+            defaultCollisionProxy = 'none';
             
             addRequired(p,'agglomerationType',isValidAgglomerationType);
             addRequired(p,'fractionArray',isValidFractionList);
@@ -69,6 +81,7 @@ classdef Agglomerate < matlab.mixin.Copyable
             addParameter(p,'agglomerationSpeed',defaultAgglomerationSpeed); % Checked in collide-function.
             addParameter(p,'randomSeed',defaultRandomSeed);
             addParameter(p,'sinterRatio',defaultSinterRatio); % Checked in collide-function.
+            addParameter(p,'collisionProxy',defaultCollisionProxy,isValidCollisionProxy);
             
             parse(p,agglomerationMode,fractions,nParticles,varargin{:});
             
@@ -77,12 +90,17 @@ classdef Agglomerate < matlab.mixin.Copyable
             obj.agglomerationSpeed = p.Results.agglomerationSpeed;
             obj.randomSeed = p.Results.randomSeed;
             obj.sinterRatio = p.Results.sinterRatio;
+            obj.collisionProxy = lower(p.Results.collisionProxy);
             
             % Set seed of the random number generator.
             rng(obj.randomSeed);
             
             % Create the particle list.
             particleList = createparticlelist(fractions,nParticles);
+            
+            % Assign the collisionProx attribute of the agglomerate to all
+            % particles.
+            [particleList(:).collisionProxy] = deal(obj.collisionProxy);
             
             % Distinguish the different agglomeration mechanisms.
             switch obj.agglomerationMode

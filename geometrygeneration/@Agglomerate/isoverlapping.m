@@ -3,6 +3,22 @@ function [isOverlapping,iPrimaryParticle_A,iPrimaryParticle_B] = ...
 %ISOVERLAPPING Checks if any primary particles of two agglomerates
 %intersect.
 
+% Decide if (and which) collision proxy should be used.
+% If we have mixed settings, then none>box>sphere.
+collisionProxies = {obj_A.collisionProxy obj_B.collisionProxy};
+
+if any(contains(collisionProxies,'sphere'))
+    collisionProxy = 'sphere';
+end
+
+if any(contains(collisionProxies,'box'))
+    collisionProxy = 'box';
+end
+
+if any(contains(collisionProxies,'none'))
+    collisionProxy = 'none';
+end
+
 % Precheck: If the convex hulls of the agglomerates don't
 % intersect, then none of their primary particles can intersect.
 
@@ -32,9 +48,22 @@ for iPrimaryParticle_A = 1:obj_A.nPrimaryParticles
     for iPrimaryParticle_B = 1:obj_B.nPrimaryParticles
         primaryParticle_B = primaryParticles_B(iPrimaryParticle_B);
         
-        isOverlapping = detectmeshcollision( ...
-            primaryParticle_A.mesh, ...
-            primaryParticle_B.mesh);
+        switch collisionProxy
+            case 'none'
+                isOverlapping = detectmeshcollision( ...
+                    primaryParticle_A.mesh, ...
+                    primaryParticle_B.mesh);
+            case 'box'
+                isOverlapping = detectboxcollision( ...
+                    primaryParticle_A.mesh, ...
+                    primaryParticle_B.mesh);
+            case 'sphere'
+                isOverlapping = detectspherecollision( ...
+                    primaryParticle_A.mesh, ...
+                    primaryParticle_B.mesh);
+            otherwise
+                error('Unknown collisionProxy setting: %s',collisionProxy);
+        end
         
         if isOverlapping
             break
