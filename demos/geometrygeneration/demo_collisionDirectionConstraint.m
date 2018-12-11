@@ -3,7 +3,7 @@ close all
 
 rng(2);
 
-d_g = 30;
+d_g = 50;
 s_g = 1.2;
 
 nPrimaryParticles = 30;
@@ -22,7 +22,7 @@ agglomerate = Agglomerate( ...
     agglomerationMode, ...
     fraction, ...
     nPrimaryParticles, ...
-    'collisionDirectionConstraint',[1 1 0]);
+    'collisionDirectionConstraint',[1 1 0]); % Counter-intuitive: 0 = is constrained
 toc;
 
 agglomerate.draw;
