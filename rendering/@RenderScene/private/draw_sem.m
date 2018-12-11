@@ -23,9 +23,11 @@ daspect([1 1 1])
 view(2)
 material dull
 
-warning('off','MATLAB:opengl:unableToSelectHWGL');
-opengl hardware
-warning('on','MATLAB:opengl:unableToSelectHWGL');
+if ~isunix % Switching to hardware OpenGL rendering at runtime on unix is not supported.
+    warning('off','MATLAB:opengl:unableToSelectHWGL');
+    opengl hardware
+    warning('on','MATLAB:opengl:unableToSelectHWGL');
+end
 
 %% If no outputargument was requested, then clear hPatch.
 if nargout == 0
