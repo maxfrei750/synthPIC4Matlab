@@ -140,13 +140,9 @@ while not(isoverlapping(obj_A,obj_B))
     obj_B = applyperiodicboundaries(obj_B,space);
     
     if doRandomWalk
-        % Create 1x3-vector of doubles ranging from -1 to 1.
-        translationDirection_random = randd([-1 1],1,3);
-        
-        % Normalize the |translationDirection_random|-vector.
-        translationDirection_random = ...
-            normalizeVector3d(translationDirection_random);
-        
+        % Create a randomly oriented translation vector.
+        translationDirection_random = normalizeVector3d(randn(1,3));
+
         % Superpose straight translation with random translation.
         translationDirection = ...
             (1-randomness)*translationDirection_straight + ...
