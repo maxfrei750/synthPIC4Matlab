@@ -33,6 +33,6 @@ geometry.rotationAngleDegree = randd([0 360]);
 
 particle = Agglomerate;
 particle.mesh = geometry.mesh;
-particle.bulkDensity = obj.bulkDensity;
+%particle.bulkDensity = obj.bulkDensity;
 particle.fractions = obj;
 end
