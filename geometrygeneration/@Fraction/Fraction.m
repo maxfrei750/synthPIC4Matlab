@@ -56,7 +56,7 @@ classdef Fraction < handle
         proportion = 1 
         
         name % Arbitrary name of the fraction.                
-        bulkDensity = 1 % In mass/voxel.
+        % bulkDensity = 1 % In mass/voxel.
     end
     
     methods
