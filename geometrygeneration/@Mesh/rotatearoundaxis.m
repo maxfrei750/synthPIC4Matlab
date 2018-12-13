@@ -11,7 +11,7 @@ validateattributes( ...
     {'numeric'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar'});
 
-% Don't perform a rotation if 
+% Don't perform a rotation if the rotation angle is zero.
 if angleDegree ~= 0
     % Rotation goes through the center of mass in the
     % specified direction.
