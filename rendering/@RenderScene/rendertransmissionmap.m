@@ -13,6 +13,9 @@ validateattributes( ...
     {'numeric'}, ...
     {'real','finite','nonnan','nonsparse','nonempty','scalar','positive'});
 
+% TODO: Render meshes with different bulkdensities individually and
+% calculate the transmssion accordingly.
+
 transmissionLengthMap = obj.rendertransmissionlengthmap;
 
 % Calculate transmission intensity map.
