@@ -7,11 +7,15 @@ nRandomPointsInVolume = 10000;
 randomPointsInVolume = ...
     getrandompointsinmesh(obj,nRandomPointsInVolume);
 
-% % Plot the random points.
+% DEBUGGING
 % scatter3( ...
 %     randomPointsInVolume(:,1), ...
 %     randomPointsInVolume(:,2), ...
 %     randomPointsInVolume(:,3));
+% 
+% hold on
+% obj.draw
+% hold off
 
 centerOfMass = mean(randomPointsInVolume);
 
