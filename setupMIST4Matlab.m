@@ -5,8 +5,8 @@ function setupMIST4Matlab
 subPathList = {
     fullfile('composing')
     fullfile('external','wmean')
-    fullfile('external','geom3d','meshes3d')
-    fullfile('external','geom3d','geom3d')
+    fullfile('external','matgeom','matGeom','meshes3d')
+    fullfile('external','matgeom','matGeom','geom3d')
     fullfile('external','gptoolbox','external')
     fullfile('external','gptoolbox','external','matlabPyrTools')
     fullfile('external','gptoolbox','matrix')

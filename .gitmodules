@@ -4,3 +4,6 @@
 [submodule "external/MATLAB-GJK-Collision-Detection"]
 	path = external/MATLAB-GJK-Collision-Detection
 	url = https://github.com/mws262/MATLAB-GJK-Collision-Detection
+[submodule "external/matgeom"]
+	path = external/matgeom
+	url = https://github.com/mattools/matGeom/
