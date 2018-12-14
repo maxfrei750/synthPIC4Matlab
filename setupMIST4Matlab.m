@@ -13,7 +13,6 @@ subPathList = {
     fullfile('external','gptoolbox','mesh')
     fullfile('external','gptoolbox','mex')
     fullfile('external','MATLAB-GJK-Collision-Detection')
-    fullfile('external','Mesh_voxelisation')    
     fullfile('external','Hardware accelerated ray-triangle intersection')
     fullfile('geometrygeneration')
     fullfile('geometrygeneration','primitives')
