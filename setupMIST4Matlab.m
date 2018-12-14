@@ -4,6 +4,7 @@ function setupMIST4Matlab
 % Specify necessary folders.
 subPathList = {
     fullfile('composing')
+    fullfile('external','CommandLineProgressBar')
     fullfile('external','wmean')
     fullfile('external','matgeom','matGeom','meshes3d')
     fullfile('external','matgeom','matGeom','geom3d')
