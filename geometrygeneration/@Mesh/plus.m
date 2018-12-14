@@ -1,6 +1,7 @@
 function obj1 = plus(obj1,obj2)
-%Validate obj2.
-validateattributes(obj2,{'Mesh'},{'numel',1});
+%Validate obj2. Dont use the validateattributes-function to increase speed.
+assert(isa(obj2,'Mesh'),'Expected obj2 to be of class Mesh.');
+assert(numel(obj2) == 1,'Expected obj2 to a single Mesh object.');
 
 % Check if obj1 is empty.
 if isempty(obj1)
