@@ -4,7 +4,7 @@ function setupMIST4Matlab
 % Specify necessary folders.
 subPathList = {
     fullfile('composing')
-    fullfile('external')
+    fullfile('external','wmean')
     fullfile('external','geom3d','meshes3d')
     fullfile('external','geom3d','geom3d')
     fullfile('external','gptoolbox','external')
