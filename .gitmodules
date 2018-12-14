@@ -7,3 +7,6 @@
 [submodule "external/matgeom"]
 	path = external/matgeom
 	url = https://github.com/mattools/matGeom/
+[submodule "external/gptoolbox"]
+	path = external/gptoolbox
+	url = https://github.com/alecjacobson/gptoolbox
