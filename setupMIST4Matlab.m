@@ -14,9 +14,7 @@ subPathList = {
     fullfile('external','gptoolbox','mex')
     fullfile('external','MATLAB-GJK-Collision-Detection')
     fullfile('external','Mesh_voxelisation')    
-    fullfile('external','ParforProgMon')
     fullfile('external','Hardware accelerated ray-triangle intersection')
-
     fullfile('geometrygeneration')
     fullfile('geometrygeneration','primitives')
     fullfile('rendering')
