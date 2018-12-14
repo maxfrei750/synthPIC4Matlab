@@ -1,0 +1,3 @@
+[submodule "external/CommandLineProgressBar"]
+	path = external/CommandLineProgressBar
+	url = https://github.com/maxfrei750/CommandLineProgressBar
