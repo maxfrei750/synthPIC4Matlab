@@ -4,6 +4,7 @@ function setupMIST4Matlab
 % Specify necessary folders.
 subPathList = {
     fullfile('composing')
+    fullfile('datasetgeneration');
     fullfile('external','CommandLineProgressBar')
     fullfile('external','gptoolbox','external')
     fullfile('external','gptoolbox','external','matlabPyrTools')
