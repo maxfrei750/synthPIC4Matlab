@@ -1,5 +1,5 @@
-function agglomerateDataset = readagglomeratedataset(inputPath,nFiles_desired,doRandomize)
-%READAGGLOMERATEDATASET Accumulate a dataset of agglomerates.
+function agglomerateDataset = loadagglomeratedataset(inputPath,nFiles_desired,doRandomize)
+%LOADAGGLOMERATEDATASET Accumulate a dataset of agglomerates.
 
 % List the mat files in the input folder.
 files = dir(fullfile(inputPath,'*.mat'));
@@ -52,7 +52,7 @@ dataQueue = parallel.pool.DataQueue;
 
 %% Setup progress bar.
 progressBar = CommandLineProgressBar(nFiles_desired);
-progressBar.message = ['Reading files:' newline];
+progressBar.message = ['Loading dataset:' newline];
 
 tic;
 afterEach(dataQueue, @(varargin) increment(progressBar));
