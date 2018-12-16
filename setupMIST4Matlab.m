@@ -33,5 +33,8 @@ for path = pathList'
     addpath(path{:})
 end
 
+% Save the paths permanently.
+savepath;
+
 end
 
