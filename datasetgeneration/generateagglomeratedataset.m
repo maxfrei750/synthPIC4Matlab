@@ -12,10 +12,6 @@ assert(~exist(outputPath,'dir'),'Output folder already exists.')
 % Create outputPath.
 createdirectory(outputPath);
 
-% Setup parallel pool.
-setupparallelpool
-dataQueue = parallel.pool.DataQueue;
-
 % Get number of agglomerates.
 nAgglomerates = numel(nPrimaryParticleArray);
 
@@ -25,7 +21,6 @@ progressBar.message = ['Generating agglomerates:' newline];
 
 % Generate agglomerates.
 tic;
-afterEach(dataQueue, @(varargin) increment(progressBar));
 parfor iAgglomerate = 1:nAgglomerates
     
     nPrimaryParticles = nPrimaryParticleArray(iAgglomerate);
@@ -44,7 +39,7 @@ parfor iAgglomerate = 1:nAgglomerates
     outputFile.agglomerate = agglomerate;
     
     % Update progressbar.
-    send(dataQueue,iAgglomerate);
+    progressBar.increment;
 end
 toc;
 end

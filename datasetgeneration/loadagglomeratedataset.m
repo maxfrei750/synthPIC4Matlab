@@ -46,16 +46,11 @@ files = files(1:nFiles_desired);
 % Read the files and store them into an array.
 agglomerateDataset = Agglomerate.empty(nFiles_desired,0);
 
-% Setup parallel pool.
-setupparallelpool
-dataQueue = parallel.pool.DataQueue;
-
 %% Setup progress bar.
 progressBar = CommandLineProgressBar(nFiles_desired);
 progressBar.message = ['Loading dataset:' newline];
 
 tic;
-afterEach(dataQueue, @(varargin) increment(progressBar));
 parfor iFile = 1:nFiles_desired
     file = files(iFile);
     
@@ -68,7 +63,7 @@ parfor iFile = 1:nFiles_desired
     agglomerateDataset(iFile) = temp{1};
     
     % Update progressbar.
-    send(dataQueue,iFile);
+    progressBar.increment;
 end
 toc;
 
