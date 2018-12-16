@@ -25,7 +25,7 @@ obj = p.Results.obj;
 
 
 %% Draw the geometry.
-hPatch = drawMesh(obj);
+hPatch = drawMesh(obj.vertices,obj.faces);
 
 switch lower(coloringMode)
     case 'texture'
