@@ -8,7 +8,7 @@ Microscope Image Synthesis Toolbox (MIST) for Matlab.
 
 ### In MATLAB:
 1. Navigate to the folder *F*.
-2. Execute the follwoing command in the command window:
+2. Execute the following command in the command window:
 ```MATLAB
 setupMIST4Matlab
 ```
