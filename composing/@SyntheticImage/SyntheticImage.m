@@ -8,6 +8,8 @@ classdef SyntheticImage < handle
         boundingBoxes
         masks
         completeMask
+        
+        useGpu = false;
     end
     
     properties(SetAccess = private)
