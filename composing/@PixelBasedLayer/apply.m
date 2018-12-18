@@ -21,8 +21,10 @@ if isempty(obj.parent.pixelData)
             obj.parent.pixelData = ones(obj.size);
     end
     
-    % Use GPU, if available.
-    obj.parent.pixelData = gpuArray(obj.parent.pixelData);
+    % Use GPU, if available and desired.
+    if obj.parent.useGpu && isgpuavailable
+        obj.parent.pixelData = gpuArray(obj.parent.pixelData);
+    end
 end
 
 binaryMask = obj.mask>0;

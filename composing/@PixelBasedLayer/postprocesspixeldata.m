@@ -2,9 +2,11 @@ function pixelData = postprocesspixeldata(obj,pixelData)
 %POSTPROCESSPIXELDATA Summary of this function goes here
 %   Detailed explanation goes here
 
-% Use gpu, if available.
-if isgpuavailable
+% Use GPU, if available and desired.
+if obj.parent.useGpu && isgpuavailable
     pixelData = gpuArray(pixelData);
+else
+    pixelData = gather(pixelData);
 end
 
 % Apply inversion
@@ -25,10 +27,6 @@ pixelData = clip(pixelData,obj.clipping);
 if obj.blurStrength > 0
     pixelData = imgaussfilt(pixelData,obj.blurStrength);
 end
-
-% % Apply mask.
-% pixelData = pixelData.*obj.mask;
-
 
 end
 
