@@ -40,7 +40,7 @@ progressBar.message = ['Generating agglomerates:' newline];
 
 % Generate agglomerates.
 tic;
-parfor iAgglomerate = 1:nAgglomerates
+parfor iAgglomerate = (1+nAgglomerates_offset):(nAgglomerates+nAgglomerates_offset)
     
     nPrimaryParticles = nPrimaryParticleArray(iAgglomerate);
     
