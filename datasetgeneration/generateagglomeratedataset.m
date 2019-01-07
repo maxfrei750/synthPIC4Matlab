@@ -7,7 +7,7 @@ function generateagglomeratedataset( ...
 %GENERATEAGGLOMERATEDATASET Summary of this function goes here
 %   Detailed explanation goes here
 
-assert(~exist(outputPath,'dir'),'Output folder already exists.')
+% Parse inputs
 
 % Create outputPath.
 createdirectory(outputPath);
