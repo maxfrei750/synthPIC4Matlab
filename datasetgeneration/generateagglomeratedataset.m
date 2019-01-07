@@ -35,12 +35,12 @@ createdirectory(outputPath);
 nAgglomerates = numel(nPrimaryParticleArray);
 
 % Setup progress bar.
-progressBar = CommandLineProgressBar(nAgglomerates);
+progressBar = CommandLineProgressBar(nAgglomerates-nAgglomerates_offset);
 progressBar.message = ['Generating agglomerates:' newline];
 
 % Generate agglomerates.
 tic;
-parfor iAgglomerate = (1+nAgglomerates_offset):(nAgglomerates+nAgglomerates_offset)
+parfor iAgglomerate = (1+nAgglomerates_offset):nAgglomerates
     
     nPrimaryParticles = nPrimaryParticleArray(iAgglomerate);
     
