@@ -6,6 +6,7 @@ classdef Noise3d
         type
         strength = 1
         scale = [1 1 1]
+        offset = 0
         lowerClipping = -inf
         upperClipping = inf
         randomSeed = 1
@@ -84,6 +85,9 @@ classdef Noise3d
             
             % Apply amplitude.
             amplitudes = amplitudes*obj.strength;
+                        
+            % Apply offset.
+            amplitudes = amplitudes+obj.offset;
             
             % Apply clipping.
             amplitudes = clip(amplitudes,obj.lowerClipping,obj.upperClipping);
