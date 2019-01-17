@@ -8,6 +8,23 @@ function generateagglomeratedataset( ...
 %GENERATEAGGLOMERATEDATASET Summary of this function goes here
 %   Detailed explanation goes here
 
+% Create a pool with as many workers as there are CPU cores. If necessary, close
+% old pools.
+hPool = gcp('nocreate');
+
+if isempty(hPool)
+    nWorkers = 0;
+else
+    nWorkers = hPool.NumWorkers;
+end
+
+nCores = feature('numcores');
+
+if nWorkers ~= nCores
+    delete(hPool);
+    parpool('local',nCores);
+end
+
 % Parse inputs
 isPositiveIntegerScalar = @(x) validateattributes( ...
     x, ...
