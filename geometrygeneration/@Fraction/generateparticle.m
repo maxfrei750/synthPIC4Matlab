@@ -1,6 +1,24 @@
 function particle = generateparticle(obj)
-lengthArray =  arrayfun(@random,obj.lengthDistributionList);
 
+% Draw one length for each of the lengthDistributions in
+% lengthDistributionList.
+lengthArray =  arrayfun(@random,obj.lengthDistributionList);
+    
+% Check if lengthLinkingFactorDistributionList was used.    
+if ~isempty(obj.lengthLinkingFactorDistributionList)
+    % Only use the first length, if lengthLinkingFactorDistributionList is
+    % used.
+    baseLength = lengthArray(1);
+    
+    % Draw one length for each of the lengthDistributions in
+    % lengthDistributionList.
+    lengthLinkingFactors = ...
+        arrayfun(@random,obj.lengthLinkingFactorDistributionList);
+    
+    % Calulcate lengthArray.
+    lengthArray = lengthArray.*lengthLinkingFactors;  
+end
+    
 varargin = {};
 
 if ~isempty(obj.angleDistributionList)

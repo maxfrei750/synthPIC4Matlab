@@ -42,6 +42,8 @@ classdef Fraction < handle
         
         lengthDistributionList % List of length distributions to draw lengths from.
         
+        lengthLinkingFactorDistributionList % List of distributions to draw linking factors from. These factors link dimensions to lengths that are drawn from a lengthDistribution, specified via lengthDistributionList. I.e. when using lengthLinkingFactorDistributionList, lengthDistributionList may only have a single element.
+        
         nSidesBase % Number of base-sides (if applicable).
         
         smoothingLevel = 0 % Smoothing level of the geometry (default: 0).
@@ -78,6 +80,7 @@ classdef Fraction < handle
             
             addRequired(p,'type'); % Validity is checked in sub-functions.
             addRequired(p,'lengthDistributionList',isValidDistributionList);
+            addParameter(p,'lengthLinkingFactorDistributionList',[],isValidDistributionList);
             addParameter(p,'angleDistributionList',[],isValidDistributionList);
             addParameter(p,'nSidesBase',[],isValidNSidesBase);
             
@@ -85,8 +88,15 @@ classdef Fraction < handle
             
             obj.type = type;
             obj.lengthDistributionList = lengthDistributionList;
+            obj.lengthLinkingFactorDistributionList = p.Results.lengthLinkingFactorDistributionList;
             obj.angleDistributionList = p.Results.angleDistributionList;
             obj.nSidesBase = p.Results.nSidesBase;
+            
+            % Check if a valid combination of lengthDistributionList and 
+            % lengthLinkingFactorDistributionList was given.
+            assert(...
+                isempty(obj.lengthLinkingFactorDistributionList) || numel(obj.lengthDistributionList) == 1, ...
+                'If lengthLinkingFactorDistributionList is specified, then only a single lengthDistribution may be passed.');
         end
     end
 end
