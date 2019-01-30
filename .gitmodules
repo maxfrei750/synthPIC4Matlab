@@ -9,4 +9,4 @@
 	url = https://github.com/mattools/matGeom/
 [submodule "external/gptoolbox"]
 	path = external/gptoolbox
-	url = https://github.com/alecjacobson/gptoolbox
+	url = git@github.com:maxfrei750/gptoolbox_precompiled.git
