@@ -7,7 +7,7 @@ assert(isa(obj,'Mesh'),'Expected input to be an object of class Mesh.');
 opengl software
 
 %% Draw the geometry.
-hPatch = drawMesh(obj);
+hPatch = drawMesh(obj.tostruct);
 hPatch.FaceVertexCData = obj.texture;
 
 % Set properties of the patch object, based on, whether face or point
