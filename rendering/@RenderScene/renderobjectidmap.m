@@ -40,10 +40,12 @@ objectIdMap = figure2image(hFigure,obj.imageSize);
 % Close figure.
 close(hFigure);
 
-% Reactivate anti-aliasing
-warning('off','MATLAB:opengl:unableToSelectHWGL');
-opengl hardware
-warning('on','MATLAB:opengl:unableToSelectHWGL');
+if ~isunix
+    % Reactivate anti-aliasing
+    warning('off','MATLAB:opengl:unableToSelectHWGL');
+    opengl hardware
+    warning('on','MATLAB:opengl:unableToSelectHWGL');
+end
 
 % Remove redundant color channels.
 objectIdMap = objectIdMap(:,:,1);
