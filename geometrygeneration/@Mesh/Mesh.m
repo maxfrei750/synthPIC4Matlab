@@ -123,11 +123,17 @@ classdef Mesh
                 value = categorical(cellstr(lower(value)));
             end
             
+            % If particleTypeList is empty of any type, 
+            % convert it to categorical.
+            if isempty(value)
+                value = categorical([]);
+            end
+            
             % Validate the input.
             validateattributes( ...
                 value, ...
                 {'categorical'}, ...
-                {'vector'});
+                {});
             
             obj.particleTypeList = value;
         end
