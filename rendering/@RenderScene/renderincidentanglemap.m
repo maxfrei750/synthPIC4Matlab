@@ -75,11 +75,6 @@ for iObject = 1:mesh.nObjects
      incidentAngleMap(~obj.renderbinaryobjectmap) = 1;
 end
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    incidentAngleMap = gpuArray(incidentAngleMap);
-end
-
 %% Assign the associated ...Map-attribute of the object.
 obj.incidentAngleMap = incidentAngleMap;
 

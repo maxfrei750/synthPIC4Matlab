@@ -50,11 +50,6 @@ curvatureMap = im2double(curvatureMap);
 % Flip diffusivity map.
 curvatureMap = flipud(curvatureMap);
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    curvatureMap = gpuArray(curvatureMap);
-end
-
 %% Assign the associated ...Map-attribute of the object.
 obj.curvatureMap = curvatureMap;
 

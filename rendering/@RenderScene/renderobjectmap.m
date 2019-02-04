@@ -42,11 +42,6 @@ objectMap = flipud(objectMap);
 % Invert objectmask.
 objectMap = imcomplement(objectMap);
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    objectMap = gpuArray(objectMap);
-end
-
 %% Assign the associated ...Map-attribute of the object.
 obj.objectMap = objectMap;
 end

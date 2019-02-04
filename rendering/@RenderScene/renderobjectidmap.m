@@ -60,11 +60,6 @@ objectIdMap = imcomplement(objectIdMap);
 % Convert objectIdMap to whole numbers.
 objectIdMap = round(objectIdMap*255);
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    objectIdMap = gpuArray(objectIdMap);
-end
-
 %% Assign the associated ...Map-attribute of the object.
 obj.objectIdMap = objectIdMap;
 end

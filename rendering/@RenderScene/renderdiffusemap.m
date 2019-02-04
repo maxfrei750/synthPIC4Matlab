@@ -43,11 +43,6 @@ diffuseMap = im2double(diffuseMap);
 % Flip diffuse map.
 diffuseMap = flipud(diffuseMap);
 
-% Push data to gpu, if one is available.
-if isgpuavailable
-    diffuseMap = gpuArray(diffuseMap);
-end
-
 %% Assign the associated ...Map-attribute of the object.
 obj.diffuseMap = diffuseMap;
 
