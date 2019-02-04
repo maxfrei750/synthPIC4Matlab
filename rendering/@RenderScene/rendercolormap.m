@@ -31,11 +31,6 @@ colorMap = im2double(colorMap);
 % Flip diffuse map.
 colorMap = flipud(colorMap);
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    colorMap = gpuArray(colorMap);
-end
-
 %% Assign the associated ...Map-attribute of the object.
 obj.colorMap = colorMap;
 end

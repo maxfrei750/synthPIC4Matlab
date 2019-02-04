@@ -180,9 +180,6 @@ transmissionLengthMap = vertcat(transmissionLengthMapSlices{:});
 % Resize image, in case that relativeResolution<1.
 transmissionLengthMap = imresize(transmissionLengthMap,[height width]);
 
-% Push data to the gpu again.
-transmissionLengthMap = gpuArray(transmissionLengthMap);
-
 %% Assign the associated ...Map-attribute of the object.
 obj.transmissionLengthMap = transmissionLengthMap;
 end

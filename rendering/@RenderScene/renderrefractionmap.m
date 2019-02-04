@@ -230,9 +230,6 @@ for i = 1:nRelevantExitRays
     end
 end
 
-% Push data to the gpu again.
-refractionMap = gpuArray(minimumExitAngleMap_degree);
-
 %% Assign the associated ...Map-attribute of the object.
 obj.refractionMap = refractionMap;
 end

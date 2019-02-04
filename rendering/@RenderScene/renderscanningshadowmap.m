@@ -41,10 +41,5 @@ else
     shadowMap = ones(size(objectMap));
 end
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    shadowMap = gpuArray(shadowMap);
-end
-
 end
 

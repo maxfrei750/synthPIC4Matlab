@@ -31,9 +31,5 @@ edgeGlowMap(edgeGlowMap<0) = edgeGlowMap(edgeGlowMap<0)/abs(min(edgeGlowMap(:)*1
 
 edgeGlowMap = imgaussfilt(edgeGlowMap,edgeGlowSize);
 
-%% Push data to gpu, if one is available.
-if isgpuavailable
-    edgeGlowMap = gpuArray(edgeGlowMap);
-end
 end
 
