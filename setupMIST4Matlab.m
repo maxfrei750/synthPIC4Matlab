@@ -16,6 +16,7 @@ subPathList = {
     fullfile('external','matgeom','matGeom','meshes3d')
     fullfile('external','MATLAB-GJK-Collision-Detection')
     fullfile('external','wmean')
+    fullfile('external','DataHash')
     fullfile('geometrygeneration')
     fullfile('geometrygeneration','primitives')
     fullfile('rendering')
