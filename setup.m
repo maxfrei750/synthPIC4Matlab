@@ -1,5 +1,5 @@
-function setupMIST4Matlab
-% SETUPMIST4MATLAB Adds all necessary folders to the MATLAB search path.
+function setup
+% SETUP Adds all necessary folders to the MATLAB search path.
 
 % Specify necessary folders.
 subPathList = {
@@ -23,7 +23,7 @@ subPathList = {
     fullfile('utility')
     };
 
-% Get root path of MIST4Matlab.
+% Get root path of synthPIC4Matlab.
 rootPath = fileparts(mfilename('fullpath'));
 
 % Create a pathlist.
