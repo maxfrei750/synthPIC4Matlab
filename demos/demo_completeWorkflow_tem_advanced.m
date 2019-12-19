@@ -42,7 +42,6 @@ fraction2 = Fraction('cube',scaleDistribution_cubes);
 fraction2.color = 0.75;
 fraction2.subdivisionLevel = 10;
 fraction2.smoothingLevel = 2;
-fraction2.bulkDensity = 2;
 
 % Create a fraction list.
 fractionList = [fraction1 fraction2];
