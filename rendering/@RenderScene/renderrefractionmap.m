@@ -230,6 +230,8 @@ for i = 1:nRelevantExitRays
     end
 end
 
+refractionMap = minimumExitAngleMap_degree;
+
 %% Assign the associated ...Map-attribute of the object.
 obj.refractionMap = refractionMap;
 end
