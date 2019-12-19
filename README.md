@@ -2,7 +2,7 @@
 [![Paper (arXiv)](https://img.shields.io/badge/arXiv-1907.05112-b31b1b.svg)](https://arxiv.org/abs/1907.05112)
 [![License](https://img.shields.io/github/license/maxfrei750/synthPIC4Matlab.svg)](https://github.com/maxfrei750/synthPIC4Matlab/blob/master/LICENSE) 
 
-<img src="assets\logo.png" alt="Logo"/> 
+![Logo](./assets/logo.png)
 
 # SynthPIC4Matlab
 The *synthetic Particle Image Creator (synthPIC)* is a Matlab toolbox to create synthetic training and benchmark data for image based particle analysis methods.
@@ -17,29 +17,30 @@ The *synthetic Particle Image Creator (synthPIC)* is a Matlab toolbox to create 
    * [Getting started](#getting-started)
 
 ## Workflow
-<img src="assets\workflow.png" alt="Workflow"/> 
+![Workflow](./assets/workflow.png)
 
 ## Features
 
 ### Various Agglomeration Modes
-<img src="assets\agglomeration_modes.png" alt="Agglomeration Modes"/> 
+![Agglomeration Modes](./assets/agglomeration_modes.png)
+
 
 ### Various Primary Particle Shapes
-<img src="assets\primary_particle_shapes.png" alt="Primary Particle Shapes"/> 
+![Primary Particle Shapes](./assets/primary_particle_shapes.png)
 
-### Layered Displacement
-<img src="assets\layered_displacement.png" alt="Layered Displacement"/> 
+### Layered Displacement 
+![Layered Displacement](./assets/layered_displacement.png)
 
 ### Different Shaders
 
 #### Secondary Electron Microscopy
-<img src="assets\sem.png" alt="Secondary Electron Microscopy"/> 
+![Secondary Electron Microscopy](./assets/sem.png)
 
 #### Transmission Electron Microscopy
-<img src="assets\tem.png" alt="Transmission Electron Microscopy"/> 
+![Transmission Electron Microscopy](./assets/tem.png)
 
 #### Shadowgraphy
-<img src="assets\shadowgraphy.png" alt="Shadowgraphy"/> 
+![Shadowgraphy](./assets/shadowgraphy.png)
 
 ## Citation
 If you use this repository for a publication, then please cite it using the following bibtex-entry:
