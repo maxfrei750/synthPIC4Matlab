@@ -1,3 +1,8 @@
+# ⚠️ DEPRECATED ⚠️
+This toolbox was superseeded by [synthPIC2](https://github.com/IntelligentPMT/synthPIC2), which is much more powerful and robust.
+
+---
+
 [![Paper (Powder Technology)](https://img.shields.io/badge/DOI-10.1016/j.powtec.2019.10.020-blue.svg)](https://doi.org/10.1016/j.powtec.2019.10.020)
 [![Paper (arXiv)](https://img.shields.io/badge/arXiv-1907.05112-b31b1b.svg)](https://arxiv.org/abs/1907.05112)
 [![License](https://img.shields.io/github/license/maxfrei750/default_license.svg)](https://github.com/maxfrei750/synthPIC4Matlab/blob/master/LICENSE) 
